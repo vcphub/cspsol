@@ -1,0 +1,21 @@
+Compiling and Installing program cspsol.
+-----------------------------------------------
+
+1. Program cspsol depends on glpk library. Before compiling, please install 
+glpk-4.x. For glpk details see GLPK webpage <http://www.gnu.org/software/glpk/glpk.html>.
+
+2. Go to directory src. Type make or make cspsol. This should create 
+executable cspsol.
+
+3. Copy/install the executable file cspsol to suitable directory.
+
+4. Usage: cspsol filename
+
+Where filename contains orders data in following format.
+maximum_pattern_width
+order_width_1 demand_1
+order_width_2 demand_2
+order_width_n demand_n
+
+All demand quantities are <= maximum_pattern_width.
+
