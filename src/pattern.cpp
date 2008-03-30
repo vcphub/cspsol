@@ -3,6 +3,7 @@
 #include<string>
 #include<cassert>
 #include<iostream>
+#include<iomanip>
 #include<sstream>
 #include<cmath>
 
@@ -12,8 +13,9 @@
 
 using namespace std;
 
+/* Global container to store all pattern objects. */
 vector<Pattern*> PatternList;
-double max_pattern_width = 100.0;
+double max_pattern_width;	 
 
 /*------------------------------------------------------------------------
  * Constructor
@@ -53,7 +55,7 @@ Pattern::Pattern(int * ind, double * val)
  * Add column (for each OrderWidth in ow_set) to sub-problem. 
  *
  * Note: The dual values stored from master problem are used as 
- * objective function coeffients.
+ * objective function coefficients.
 ------------------------------------------------------------------------*/
 void Pattern::create_subprob(glp_prob * lp, OrderWidthContainer& ow_set)
 {
@@ -98,45 +100,47 @@ void Pattern::create_subprob(glp_prob * lp, OrderWidthContainer& ow_set)
 }
 
 /*------------------------------------------------------------------------
-Description: Create and solve subproblem. Generate best pattern. 
+Description: Create and solve subproblem (integer knapsack problem). 
+Use optimal solution to sub-problem to generate best pattern. 
+Return value: Pointer to best pattern object.
 ------------------------------------------------------------------------*/
 Pattern * Pattern::generate_pattern(OrderWidthContainer& ow_set, int iter_count)
 {
-	glp_prob * lp;
+	glp_prob * subp_lp;	/* Subproblem IP */
 	ostringstream sout;
 
-	lp = glp_create_prob();
+	subp_lp = glp_create_prob();
 
 	/* Add order width variables and max width constraint. */
-	create_subprob(lp, ow_set);	
+	create_subprob(subp_lp, ow_set);	
 	//sout << "subprob.lp." << iter_count;
-	//lpx_write_cpxlp(lp, sout.str().c_str());
+	//lpx_write_cpxlp(subp_lp, sout.str().c_str());
 
-	/* Solve as integer program */
-	int status = glp_simplex(lp, NULL);
+	/* Solve the subproblem as integer program */
+	int status = glp_simplex(subp_lp, NULL);
 	assert(status == 0);
-	//assert(glp_get_status(lp) == GLP_OPT);
+	//assert(glp_get_status(subp_lp) == GLP_OPT);
 
-	status = glp_intopt(lp, NULL);
+	status = glp_intopt(subp_lp, NULL);
 	assert(status == 0);
-	assert(glp_mip_status(lp) == GLP_OPT);
+	assert(glp_mip_status(subp_lp) == GLP_OPT);
 
-	//fout << "Subproblem obj func value = "<< glp_mip_obj_val(lp) << endl;
+	//fout << "Subproblem obj func value = "<< glp_mip_obj_val(subp_lp) << endl;
 
 	/* Store solution into Pattern object. */	
 	/* Count solution variables with non-zero values. */
-	int ccnt = glp_get_num_cols(lp);
+	int ccnt = glp_get_num_cols(subp_lp);
 	int nzcnt = 0;
 	for(int col_ind = 1; col_ind <= ccnt; col_ind++) {
-		double value = glp_mip_col_val(lp, col_ind);
+		double value = glp_mip_col_val(subp_lp, col_ind);
 		if(value != 0.0) {
 			nzcnt++;
 		}
 	}
 
 	if(nzcnt == 0) {
-		//lpx_write_cpxlp(lp, "debug.subprob.lp");
-		glp_delete_prob(lp);
+		//lpx_write_cpxlp(subp_lp, "debug.subprob.lp");
+		glp_delete_prob(subp_lp);
 		return NULL;
 	}
 
@@ -149,7 +153,7 @@ Pattern * Pattern::generate_pattern(OrderWidthContainer& ow_set, int iter_count)
 	for(int i = 1; ow_iter != ow_set.end(); ow_iter++) {
 
 		int subprob_col_ind = (*ow_iter)->get_subprob_col_num();			
-		double value = glp_mip_col_val(lp, subprob_col_ind);
+		double value = glp_mip_col_val(subp_lp, subprob_col_ind);
 		if(value != 0.0) {
 			ind[i] = (*ow_iter)->get_master_row_num();
 			val[i] = value;
@@ -163,7 +167,7 @@ Pattern * Pattern::generate_pattern(OrderWidthContainer& ow_set, int iter_count)
 	pattern->nzcnt  = nzcnt;
 	
 	/* Clean up subproblem. */
-	glp_delete_prob(lp);
+	glp_delete_prob(subp_lp);
 
 	return pattern;
 }
@@ -193,17 +197,19 @@ bool pattern_compare(Pattern * lhs, Pattern * rhs)
 }
 
 /*------------------------------------------------------------------------
-Check pattern for duplication and add it to PatternList.
+Description: Check if exactly same pattern already exists in PatterList.
+Return value:
+true = Duplicte pattern exists.
+false = New pattern.
 ------------------------------------------------------------------------*/
 bool Pattern::check_duplicate(Pattern * pattern)
 {
-	vector<Pattern*>::iterator pat_iter = PatternList.begin();	
+	PatternIterator pat_iter = PatternList.begin();	
 	for(; pat_iter != PatternList.end(); pat_iter++) {
 		if(pattern_compare((*pat_iter), pattern) == true)
 			return true;
 	}
 
-	PatternList.push_back(pattern);
 	return false;
 }
 
@@ -268,7 +274,7 @@ void Pattern::print_solution(ostream& fout, glp_prob * master_lp, OrderWidthCont
 		if(abs(x) <= EPSILON)
 			continue;
 
-		fout<< "Pattern count = "<< x <<": ";
+		fout<< "Pattern count = "<<setw(4)<<x<<": ";
 
 		for(int i = 1; i <= (*pat_iter)->nzcnt; i++) {
 			int ow_row_index = (*pat_iter)->ind[i];
@@ -276,14 +282,15 @@ void Pattern::print_solution(ostream& fout, glp_prob * master_lp, OrderWidthCont
 
 			OrderWidth * ow;
 		       	ow = OrderWidth::find_orderwidth(ow_set, ow_row_index);
-			fout<< ow->get_width() << " x " << ow_count <<", ";			
+			fout<<setw(5)<<ow->get_width() << " x " <<setw(2)<< ow_count <<", ";			
 		}
 		fout << endl;		
 	}
 }
 
+/* Clean up */
 Pattern::~Pattern(void)
 {
-	delete [] ind;
-	delete [] val;
+	delete [] ind; ind = NULL;
+	delete [] val; val = NULL;
 }

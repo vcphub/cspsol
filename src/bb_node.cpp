@@ -63,9 +63,10 @@ void BBNode::solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set)
 		lp_status = glp_simplex(master_lp, NULL);
 		assert(lp_status == 0);
 
-		if(glp_get_status(master_lp) != GLP_OPT) {
-			break;
-		}
+		if(glp_get_status(master_lp) != GLP_OPT) break;
+		/* CG only for root node. */
+		if(this->node_id != 1) break;
+
 		fout << "Obj Func Value = " << glp_get_obj_val(master_lp) << endl;
 
 		/* Store dual values in OrderWidth objects. */
@@ -88,8 +89,8 @@ void BBNode::solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set)
 	if(glp_get_status(master_lp) != GLP_OPT)
 		this->lp_status = REAL_INFEA;
 
-	else if(nonzero_slack_vars(master_lp) == true) 
-		this->lp_status = LOGIC_INFEA;
+	//else if(nonzero_slack_vars(master_lp) == true)  
+		//this->lp_status = LOGIC_INFEA; 
 
 	else if(this->int_sol() == true) {
 		this->opt_obj_val = glp_get_obj_val(master_lp); 

@@ -41,9 +41,9 @@ int main(int argc, char * argv[])
 	OrderWidthContainer ow_set;	
 	/* Container object represents branch and bound tree. */
 	BBNodeContainer bbnode_set;	
-	time_t start_time, end_time;
 	SearchStrategy search = DFS;
 	char * order_data_file = NULL;
+	time_t start_time, end_time;
 
 	time(&start_time);
 	/* Command line arguments. */
@@ -61,7 +61,8 @@ int main(int argc, char * argv[])
 	glp_set_obj_dir(master_lp, GLP_MIN);
 
 	add_demand_constraints(master_lp, ow_set);
-	add_slack_variables(master_lp, ow_set);
+	//add_slack_variables(master_lp, ow_set);
+	add_init_patterns(master_lp, ow_set);
 
 	/* Create root BB node. */
 	BBNode * node = new BBNode(master_lp, (long int)1);
@@ -85,8 +86,8 @@ int main(int argc, char * argv[])
 		node->solve(ow_set, bbnode_set);
 		solved_node_cnt++;
 
-		cout<<"Node "<<setw(5)<<(solved_node_cnt);
-		cout<<": new patterns = "<<node->get_pat_cnt()<<" ";
+		cout<<"Node "<<setw(4)<<(solved_node_cnt);
+		cout<<": new patterns = "<<setw(4)<<node->get_pat_cnt()<<" ";
 
 		
 		if(node->get_lp_status() == REAL_INFEA || 
@@ -139,7 +140,7 @@ void print_usage()
 	cout << "All demand quantities are <= maximum_pattern_width." << endl;
 	cout << endl;
 	cout << "Options:"<<endl;
-	cout << "--dfs		Process branch and bound tree in depth first manner."<<endl;
+	cout << "--dfs		Process branch and bound tree in depth first manner (default)."<<endl;
 	cout << "--bfs		Process branch and bound tree in breadth first manner."<<endl;
 	cout << "-h, --help 	Display this help information and exit."<<endl;
 	cout << endl;

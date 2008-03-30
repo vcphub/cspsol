@@ -18,31 +18,62 @@ using namespace std;
 /*------------------------------------------------------------------------
 Each order demand must be satisfied.
 ------------------------------------------------------------------------*/
-void add_demand_constraints(glp_prob * lp, OrderWidthContainer& ow_set)
+void add_demand_constraints(glp_prob * master_lp, OrderWidthContainer& ow_set)
 {
 	/* Add after existing rows. */
-	int row_index = glp_get_num_rows(lp) + 1;
+	int row_index = glp_get_num_rows(master_lp) + 1;
 
 	/* Add demand row for each order. */
-	glp_add_rows(lp, ow_set.size());
+	glp_add_rows(master_lp, ow_set.size());
 
 	OrderWidthIterator ow_iter = ow_set.begin();	
 	for(; ow_iter != ow_set.end(); ow_iter++) {
 
 		double rhs = (*ow_iter)->get_demand();
-		glp_set_row_bnds(lp, row_index, GLP_LO, rhs, 0.0);
+		glp_set_row_bnds(master_lp, row_index, GLP_LO, rhs, 0.0);
 
 		ostringstream sout;
 		sout << "Width" << (*ow_iter)->get_id();
-		glp_set_row_name(lp, row_index, sout.str().c_str()); 
+		glp_set_row_name(master_lp, row_index, sout.str().c_str()); 
 
 		(*ow_iter)->set_master_row_num(row_index);
 
 		row_index++;
 	}	
 
-	cout << "Total rows, cols = "<<(glp_get_num_rows(lp))<<", "
-		<<(glp_get_num_cols(lp))<<endl;
+	cout << "Add order demand constraints. ";
+	cout << "Total rows, cols = "<<(glp_get_num_rows(master_lp))<<", "
+		<<(glp_get_num_cols(master_lp))<<endl;
+}
+
+/*------------------------------------------------------------------------
+ * Create trivial pattern for each OrderWidth object.
+ * Add these patterns to the master problem.
+------------------------------------------------------------------------*/
+void add_init_patterns(glp_prob * master_lp, OrderWidthContainer& ow_set)
+{
+
+	OrderWidthIterator ow_iter = ow_set.begin();	
+	for(; ow_iter != ow_set.end(); ow_iter++) {
+
+		/* Only one non-zero element for each column/pattern. */
+		int nzcnt = 1; 
+		int * ind = new int[nzcnt+1];
+		double * val = new double[nzcnt+1];
+		ind[1] = (*ow_iter)->get_master_row_num();
+		val[1] = 1.0;
+
+		/* Create new pattern object and store arrays ind and val into it. */
+		Pattern * pattern = new Pattern();
+		pattern->ind = ind;
+		pattern->val = val;
+		pattern->nzcnt  = nzcnt;
+
+		add_pattern(master_lp, pattern);
+	}
+	cout << "Added initial patterns. ";
+	cout << "Total rows, cols = "<<(glp_get_num_rows(master_lp))<<", "
+		<<(glp_get_num_cols(master_lp))<<endl;
 }
 
 /*------------------------------------------------------------------------
@@ -97,13 +128,21 @@ void store_dual_values(glp_prob * lp, OrderWidthContainer& ow_set)
 }
 
 /*------------------------------------------------------------------------
-Try to add best pattern to the model.
+Desciption: Try to add new best pattern to the model and global 
+container PatternList.
+Return value:
+true = New pattern added successfully.
+false = Duplicate pattern NOT added. 
 ------------------------------------------------------------------------*/
 bool add_pattern(glp_prob * master_lp, Pattern * pattern)
 {
 	int col_index = 0;
 	
+	assert(pattern != NULL);
 	if(Pattern::check_duplicate(pattern) == false) {
+
+		/* Add to global container PatterList. */
+		PatternList.push_back(pattern);
 
 		col_index = glp_get_num_cols(master_lp) + 1;
 		glp_add_cols(master_lp, 1);
@@ -121,19 +160,20 @@ bool add_pattern(glp_prob * master_lp, Pattern * pattern)
 	}
 }
 
-/* Check status of slack variables. 
+/*------------------------------------------------------------------------
+Check status of slack variables. 
 Return value:
 true = if atleast one slack variable has positive value.
 false = if all slack variables are close to zero.
-*/
-bool nonzero_slack_vars(glp_prob * lp)
+------------------------------------------------------------------------*/
+bool nonzero_slack_vars(glp_prob * master_lp)
 {
 	int col_ind;
 	double x;
 
 	for(size_t i = 0; i < SlackIndexList.size(); i++) {
 		col_ind = SlackIndexList[i];
-		x = glp_get_col_prim(lp, col_ind);
+		x = glp_get_col_prim(master_lp, col_ind);
 		if(x >= EPSILON)
 			return true;
 	}
@@ -149,6 +189,5 @@ void print_pattern_var(glp_prob * master_lp)
 		col_index = PatternList[i]->get_master_col_num();
 		fout << glp_get_col_prim(master_lp, col_index) <<" ";
 	}
-
 }
 

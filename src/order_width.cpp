@@ -21,20 +21,26 @@ int OrderWidth::count = 0;
 /*------------------------------------------------------------------------
  * Constructor
 ------------------------------------------------------------------------*/
-OrderWidth::OrderWidth(int width, int demand)
+OrderWidth::OrderWidth(double width, int demand)
 {
-	assert(demand >= 0);
-	if(width > max_pattern_width) {
-		cout << "incorrect input: width = " << width;
-		cout << " max = " << max_pattern_width << endl;
+	if(demand <= 0) {
+		cout<<"incorrect input: demand = "<<demand<<endl;
 		exit(-1);
 	}
-	assert(width > 0);
+	if(width <= 0 || width > max_pattern_width) {
+		cout << "incorrect input: width = " << width;
+		cout << " max pattern width = " << max_pattern_width << endl;
+		exit(-1);
+	}
 
 	this->width = width;
 	this->demand = demand;	
 	this->id = OrderWidth::count + 1;
 	OrderWidth::count++;
+
+	/* Initialize indices. */
+	this->master_row_num = -1;
+	this->subprob_col_num = -1;
 }
 
 /*------------------------------------------------------------------------
@@ -46,7 +52,8 @@ order_width demand_quantity
 void OrderWidth::read_order_data(OrderWidthContainer& ow_set, std::string filename)
 {
 	ifstream fin;
-	int width, demand;
+	double width;
+        int demand;
 
 	fin.open(filename.c_str());
 	assert(fin != NULL);
