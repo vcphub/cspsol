@@ -3,16 +3,17 @@
 
 #include<string>
 #include<vector>
-#include<queue>
+#include<deque>
 #include "order_width.h"
 #include "glpk.h"
 
 enum NodeStatus {NOT_SOLVED, OPT_NONINT, OPT_INT, REAL_INFEA, LOGIC_INFEA};
+enum SearchStrategy {DFS, BFS};
 
 class BBNode;	/* Forward declaration */
 
 /* Queue is used to implement Breadth First Search */
-typedef std::queue<BBNode*> BBNodeContainer;
+typedef std::deque<BBNode*> BBNodeContainer;
 typedef std::vector<int> IntContainer;
 typedef std::vector<double> DblContainer;
 
