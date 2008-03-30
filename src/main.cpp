@@ -28,6 +28,11 @@ using namespace std;
 
 /* Global object to print debug information into a log file. */
 ofstream fout("log.txt");
+/* Global functions. */
+void print_usage();
+void process_arguments(int argc, char * argv[], char **file, SearchStrategy& search);
+
+#define parse_cla(str) (strcmp(argv[i], str) == 0)
 
 /* Program entry point */
 int main(int argc, char * argv[])
@@ -37,22 +42,14 @@ int main(int argc, char * argv[])
 	/* Container object represents branch and bound tree. */
 	BBNodeContainer bbnode_set;	
 	time_t start_time, end_time;
+	SearchStrategy search = DFS;
+	char * order_data_file = NULL;
 
 	time(&start_time);
+	/* Command line arguments. */
+	process_arguments(argc, argv, &order_data_file, search);
 
-	if(argc != 2) {
-		cout << "Usage: " << argv[0] << " filename" << endl << endl;
-		cout << "Where filename contains orders data in following format." << endl;
-		cout << "maximum_pattern_width" << endl;
-		cout << "order_width_1 demand_1" << endl;
-		cout << "order_width_2 demand_2" << endl;
-		cout << "order_width_n demand_n" << endl << endl;
-		cout << "All demand quantities are <= maximum_pattern_width." << endl;
-	       	cout << endl;
-		exit(-1);
-	}
-	/* Parse the argument */
-	OrderWidth::read_order_data(ow_set, argv[1]);
+	OrderWidth::read_order_data(ow_set, order_data_file);
 	OrderWidth::print_order_list(ow_set);
 
 	/* Create master lp using GLPK API. */
@@ -68,15 +65,21 @@ int main(int argc, char * argv[])
 
 	/* Create root BB node. */
 	BBNode * node = new BBNode(master_lp, (long int)1);
-	bbnode_set.push(node);
+	bbnode_set.push_back(node);
 
 	/* While Loop: Branch and bound algorithm. Breadth First Search (BFS). */
 	int solved_node_cnt = 0;
 	while(bbnode_set.empty() == false) {
 
 		/* Select next node from the tree. */
-		BBNode * node = bbnode_set.front();
-		bbnode_set.pop();
+		BBNode * node;
+		if(search == DFS) {
+	       		node = bbnode_set.front();
+			bbnode_set.pop_front();
+		} else if(search == BFS) {
+	       		node = bbnode_set.back();
+			bbnode_set.pop_back();
+		}
 
 		/* Solve node LP using column generation. */
 		node->solve(ow_set, bbnode_set);
@@ -121,3 +124,58 @@ int main(int argc, char * argv[])
 
 	return 0;
 }
+
+
+/* Print program usage. */
+void print_usage() 
+{
+	cout << endl;
+	cout << "Usage: cspsol [options...]" << " --data filename" << endl << endl;
+	cout << "Where filename contains orders data in following format." << endl;
+	cout << "maximum_pattern_width" << endl;
+	cout << "order_width_1 demand_1" << endl;
+	cout << "order_width_2 demand_2" << endl;
+	cout << "order_width_n demand_n" << endl << endl;
+	cout << "All demand quantities are <= maximum_pattern_width." << endl;
+	cout << endl;
+	cout << "Options:"<<endl;
+	cout << "--dfs		Process branch and bound tree in depth first manner."<<endl;
+	cout << "--bfs		Process branch and bound tree in breadth first manner."<<endl;
+	cout << "-h, --help 	Display this help information and exit."<<endl;
+	cout << endl;
+
+	exit(-1);
+}
+
+/* Process command line options. */
+void process_arguments(int argc, char * argv[], char **file, SearchStrategy& search)
+{
+
+	/* Parse the argument */
+	if(argc == 1)
+		print_usage();
+	int i;
+	for(i = 1; i < argc; i++) {
+		if(parse_cla("--help") || parse_cla("-h"))
+			print_usage();
+		if(parse_cla("--dfs"))
+			search = DFS;
+		else if(parse_cla("--bfs"))
+			search = BFS;
+		else if (parse_cla("-d") || parse_cla("--data"))
+		{  
+			i++; 
+			if (i == argc || argv[i][0] == '\0' || argv[i][0] == '-')  {
+				printf("cspsol rrror: Orders data file NOT specifed");
+				print_usage();
+			}    
+			*(file) = argv[i];
+		} 
+	}
+
+	if((i == argc)  && (*file == NULL)) {
+		printf("cspsol rrror: Orders data file NOT specifed");
+		print_usage();
+	}
+}
+

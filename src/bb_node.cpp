@@ -169,12 +169,12 @@ void BBNode::branch(BBNodeContainer& bbnode_set)
 	/* Fix UP, ceil_x <= variable << Infinity */
 	right_child = new BBNode(2*this->node_id + 1, this);
 	right_child->add_var_fix(col_ind, ceil_x, Infinity);		
-	bbnode_set.push(right_child);
+	bbnode_set.push_back(right_child);
 
 	/* Fix DOWN, 0 <= variable <= floor_x */
 	left_child = new BBNode(2*this->node_id, this);
 	left_child->add_var_fix(col_ind, 0.0, floor_x);
-	bbnode_set.push(left_child);
+	bbnode_set.push_back(left_child);
 
 	fout<<"Branching on pattern variable, col index = "<<col_ind<<endl;
 }
