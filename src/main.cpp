@@ -28,6 +28,7 @@ using namespace std;
 
 /* Global object to print debug information into a log file. */
 ofstream fout("log.txt");
+bool workaround_flag = false;
 /* Global functions. */
 void print_usage();
 void process_arguments(int argc, char * argv[], char **file, SearchStrategy& search);
@@ -142,6 +143,7 @@ void print_usage()
 	cout << "Options:"<<endl;
 	cout << "--dfs		Process branch and bound tree in depth first manner (default)."<<endl;
 	cout << "--bfs		Process branch and bound tree in breadth first manner."<<endl;
+	cout << "--wa		Use workaround to get alternate opt. int. sol."<<endl;
 	cout << "-h, --help 	Display this help information and exit."<<endl;
 	cout << endl;
 
@@ -163,6 +165,8 @@ void process_arguments(int argc, char * argv[], char **file, SearchStrategy& sea
 			search = DFS;
 		else if(parse_cla("--bfs"))
 			search = BFS;
+		else if(parse_cla("--wa"))
+			workaround_flag = true;
 		else if (parse_cla("-d") || parse_cla("--data"))
 		{  
 			i++; 

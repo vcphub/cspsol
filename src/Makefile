@@ -5,7 +5,8 @@ INC = ../include
 GLPKINC = /usr/local/include
 
 cspsol: $(OBJS)
-	g++ -o cspsol $(OBJS) -lglpk -lm
+	g++ -o cspsol $(OBJS) libglpk.a -lm
+#g++ -o cspsol $(OBJS) -lglpk -lm
 
 datagen: datagen.cpp
 	g++ -o datagen datagen.cpp

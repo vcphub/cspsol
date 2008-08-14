@@ -57,7 +57,8 @@ Pattern::Pattern(int * ind, double * val)
  * Note: The dual values stored from master problem are used as 
  * objective function coefficients.
 ------------------------------------------------------------------------*/
-void Pattern::create_subprob(glp_prob * lp, OrderWidthContainer& ow_set)
+void Pattern::create_subprob(glp_prob * lp, OrderWidthContainer& ow_set,
+				bool alternate_sol)
 {
 	/* Add pattern width constraint. */
 	assert(lp != NULL);
@@ -66,7 +67,15 @@ void Pattern::create_subprob(glp_prob * lp, OrderWidthContainer& ow_set)
 
 	glp_add_rows(lp, 1);
 	glp_set_row_name(lp, 1, "PatternWidthConstraint");
-	glp_set_row_bnds(lp, 1, GLP_UP, 0.0, max_pattern_width);
+
+	/* Workaround: Force branching. This will give us alternate 
+	 * opt. int. solution. Assumption: All demands widths are
+	 * integer. 
+	 * */
+	if(alternate_sol == true)
+		glp_set_row_bnds(lp, 1, GLP_UP, 0.0, max_pattern_width + 0.5);
+	else
+		glp_set_row_bnds(lp, 1, GLP_UP, 0.0, max_pattern_width);
 
 	/* Add integer variables to above constraints. */
 	int col_ind = glp_get_num_cols(lp) + 1;
@@ -104,15 +113,27 @@ Description: Create and solve subproblem (integer knapsack problem).
 Use optimal solution to sub-problem to generate best pattern. 
 Return value: Pointer to best pattern object.
 ------------------------------------------------------------------------*/
-Pattern * Pattern::generate_pattern(OrderWidthContainer& ow_set, int iter_count)
+Pattern * Pattern::generate_pattern(OrderWidthContainer& ow_set, int iter_count, 
+				bool tol_flag)
 {
 	glp_prob * subp_lp;	/* Subproblem IP */
+	glp_iocp parm;
 	ostringstream sout;
 
 	subp_lp = glp_create_prob();
 
-	/* Add order width variables and max width constraint. */
-	create_subprob(subp_lp, ow_set);	
+	/* New control parameter object. */
+	glp_init_iocp(&parm);
+
+	if(tol_flag == true) {
+		parm.tol_obj = -parm.tol_obj; // i.e. -1e-7
+		create_subprob(subp_lp, ow_set, true);	
+	} else {
+		/* Use default parameters. */
+		create_subprob(subp_lp, ow_set, false);	
+	}
+
+	/* Now subprob has order width vars and max. width constraint */
 	//sout << "subprob.lp." << iter_count;
 	//lpx_write_cpxlp(subp_lp, sout.str().c_str());
 
@@ -121,7 +142,7 @@ Pattern * Pattern::generate_pattern(OrderWidthContainer& ow_set, int iter_count)
 	assert(status == 0);
 	//assert(glp_get_status(subp_lp) == GLP_OPT);
 
-	status = glp_intopt(subp_lp, NULL);
+	status = glp_intopt(subp_lp, &parm);
 	assert(status == 0);
 	assert(glp_mip_status(subp_lp) == GLP_OPT);
 
