@@ -16,6 +16,7 @@ using namespace std;
 /* Global container to store all pattern objects. */
 vector<Pattern*> PatternList;
 double max_pattern_width;	 
+extern bool workaround_flag;
 
 /*------------------------------------------------------------------------
  * Constructor
@@ -109,10 +110,53 @@ void Pattern::create_subprob(glp_prob * lp, OrderWidthContainer& ow_set,
 }
 
 /*------------------------------------------------------------------------
+Description: If possible, generate new pattern.
+Return value: 
+	Pointer to best pattern object OR
+	NULL
+------------------------------------------------------------------------*/
+Pattern * Pattern::get_new_pattern(OrderWidthContainer& ow_set, int iter_count) 
+{
+
+	Pattern * new_pat = NULL;
+
+	if(0) {
+		// Solve subproblem using dynamic programming.
+	} else {
+
+		// Solve subproblem MIP using glp_intopt
+		Pattern * pattern = NULL;
+		pattern = Pattern::generate_pattern(ow_set, iter_count, false);
+		if(pattern == NULL) 
+			new_pat = NULL;
+
+		else if(Pattern::check_duplicate(pattern) == true) {
+
+			pattern->print_pattern();
+			/* Check if alternate optimal integer solution exists. */
+			if(workaround_flag == true) {
+				fout << "Got duplicate pattern. Looking for alternate." << endl;
+				pattern = Pattern::generate_pattern(ow_set, iter_count, true);
+			}
+		}
+		if(pattern == NULL) 
+			new_pat = NULL;
+		else if(Pattern::check_duplicate(pattern) == true)
+			new_pat = NULL;
+		else 
+			new_pat = pattern;
+	}
+
+	return new_pat;
+}
+
+
+/*------------------------------------------------------------------------
 Description: Create and solve subproblem (integer knapsack problem). 
 Use optimal solution to sub-problem to generate best pattern. 
 Return value: Pointer to best pattern object.
 ------------------------------------------------------------------------*/
+
 Pattern * Pattern::generate_pattern(OrderWidthContainer& ow_set, int iter_count, 
 				bool tol_flag)
 {
