@@ -38,6 +38,7 @@ public:
 	double get_int_sol() { return int_sol; }
 	void set_int_sol(double x) { int_sol = x; }
 
+	static Pattern * get_new_pattern(OrderWidthContainer& ow_set, int iter_count); 
 	static Pattern * generate_pattern(OrderWidthContainer& ow_set, int icnt, 
 					bool tol_flag);
 	static void create_subprob(glp_prob * lp, OrderWidthContainer& ow_set,

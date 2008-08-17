@@ -75,25 +75,11 @@ void BBNode::solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set)
 
 		/* Generate best pattern by solving subproblem. */
 		Pattern * pattern;
-	   	pattern = Pattern::generate_pattern(ow_set, iter_count, false);
+	   	pattern = Pattern::get_new_pattern(ow_set, iter_count);
 		if(pattern == NULL) break;
-		cg_status = add_pattern(master_lp, pattern);
 
-		pattern->print_pattern();
-
-		/* Workaround: cg_status == false, means duplicate pattern. 
-		 * We try to check if alternate optimal integer solution exists.
-		 * */
-		if((cg_status == false) && (workaround_flag == true)) {
-			fout << "Got duplicate pattern. Looking for alternate." << endl;
-			pattern = Pattern::generate_pattern(ow_set, iter_count, true);
-			if(pattern == NULL) break;
-			cg_status = add_pattern(master_lp, pattern);
-			pattern->print_pattern();
-		}
-
-		if(cg_status == true)
-			pat_cnt++;
+		add_pattern(master_lp, pattern);
+		pat_cnt++;
 
 		iter_count++;
 
