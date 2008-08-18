@@ -10,6 +10,7 @@
 #include "glpk.h"
 #include "pattern.h"
 #include "extern.h"
+#include "knapsack.h"
 
 using namespace std;
 
@@ -17,6 +18,7 @@ using namespace std;
 vector<Pattern*> PatternList;
 double max_pattern_width;	 
 extern bool workaround_flag;
+extern bool subintopt_flag;
 
 /*------------------------------------------------------------------------
  * Constructor
@@ -117,34 +119,42 @@ Return value:
 ------------------------------------------------------------------------*/
 Pattern * Pattern::get_new_pattern(OrderWidthContainer& ow_set, int iter_count) 
 {
-
 	Pattern * new_pat = NULL;
 
-	if(0) {
+	if(subintopt_flag == false) {
 		// Solve subproblem using dynamic programming.
+		PatternContainer * solset;
+		solset = get_dp_solution(ow_set, max_pattern_width);
+
+		for(int i = 0; i < (int)solset->size(); i++)
+		{
+			new_pat = (*solset)[i];
+			if(Pattern::check_duplicate(new_pat) == true) {
+				delete new_pat; /* delete dupe */
+				new_pat = NULL;
+			} else {
+				// new_pat->print_pattern();
+				// Best pattern found.
+				break;
+			}
+		}
+		delete solset;
+
 	} else {
 
 		// Solve subproblem MIP using glp_intopt
-		Pattern * pattern = NULL;
-		pattern = Pattern::generate_pattern(ow_set, iter_count, false);
-		if(pattern == NULL) 
-			new_pat = NULL;
+		new_pat = Pattern::generate_pattern(ow_set, iter_count, false);
+		if(Pattern::check_duplicate(new_pat) == true) {
 
-		else if(Pattern::check_duplicate(pattern) == true) {
-
-			pattern->print_pattern();
+			//new_pat->print_pattern();
 			/* Check if alternate optimal integer solution exists. */
 			if(workaround_flag == true) {
 				fout << "Got duplicate pattern. Looking for alternate." << endl;
-				pattern = Pattern::generate_pattern(ow_set, iter_count, true);
+				new_pat = Pattern::generate_pattern(ow_set, iter_count, true);
 			}
 		}
-		if(pattern == NULL) 
+		if(Pattern::check_duplicate(new_pat) == true)
 			new_pat = NULL;
-		else if(Pattern::check_duplicate(pattern) == true)
-			new_pat = NULL;
-		else 
-			new_pat = pattern;
 	}
 
 	return new_pat;
