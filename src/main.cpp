@@ -29,6 +29,7 @@ using namespace std;
 /* Global object to print debug information into a log file. */
 ofstream fout("log.txt");
 bool workaround_flag = false;
+bool subintopt_flag = false;
 /* Global functions. */
 void print_usage();
 void process_arguments(int argc, char * argv[], char **file, SearchStrategy& search);
@@ -76,10 +77,10 @@ int main(int argc, char * argv[])
 		/* Select next node from the tree. */
 		BBNode * node;
 		if(search == DFS) {
-	       		node = bbnode_set.front();
+	       	node = bbnode_set.front();
 			bbnode_set.pop_front();
 		} else if(search == BFS) {
-	       		node = bbnode_set.back();
+	       	node = bbnode_set.back();
 			bbnode_set.pop_back();
 		}
 
@@ -110,6 +111,7 @@ int main(int argc, char * argv[])
 
 		} else if(node->get_lp_status() == OPT_INT) 
 			cout << "Obj Func Value = "<< node->get_opt_obj_val() <<" INTEGER ***"<<endl;
+
 	} 
 
 	/* Print solution report. */
@@ -134,17 +136,25 @@ void print_usage()
 	cout << endl;
 	cout << "Usage: cspsol [options...]" << " --data filename" << endl << endl;
 	cout << "Where filename contains orders data in following format." << endl;
-	cout << "maximum_pattern_width" << endl;
+	cout << "max_pattern_width" << endl;
 	cout << "order_width_1 demand_1" << endl;
 	cout << "order_width_2 demand_2" << endl;
 	cout << "order_width_n demand_n" << endl << endl;
-	cout << "All demand quantities are <= maximum_pattern_width." << endl;
+
+	cout << "All order widths must be <= max_pattern_width." << endl;
+	cout << "All demands, order widths and max_pattern_width must be INTEGERs." << endl;
 	cout << endl;
+
 	cout << "Options:"<<endl;
-	cout << "--dfs		Process branch and bound tree in depth first manner (default)."<<endl;
-	cout << "--bfs		Process branch and bound tree in breadth first manner."<<endl;
-	cout << "--wa		Use workaround to get alternate opt. int. sol."<<endl;
-	cout << "-h, --help 	Display this help information and exit."<<endl;
+	cout << "--dfs	Process branch and bound tree in depth first manner (default)."<<endl;
+	cout << "--bfs	Process branch and bound tree in breadth first manner."<<endl;
+	cout << "--si,	Use glp_intopt to solve subproblem (knapsack)."<<endl;
+	cout << "	By default dynamic programming is used."<<endl;
+
+	cout << "--wa	Use workaround to get alternate opt. int. sol."<<endl;
+	cout << "	To be used with --si. Needs changes/patch to GLPK lib."<<endl;
+
+	cout << "-h, --help	Display this help information and exit."<<endl;
 	cout << endl;
 
 	exit(-1);
@@ -165,8 +175,13 @@ void process_arguments(int argc, char * argv[], char **file, SearchStrategy& sea
 			search = DFS;
 		else if(parse_cla("--bfs"))
 			search = BFS;
-		else if(parse_cla("--wa"))
+		else if(parse_cla("--wa")) {
+			cout<<endl;
+			cout<<"IMP: Must use patched GLPK lib to allow -ve tol_obj."<<endl;
+			cout<<endl;
 			workaround_flag = true;
+		} else if(parse_cla("--subintopt") || parse_cla("--si"))
+			subintopt_flag = true;
 		else if (parse_cla("-d") || parse_cla("--data"))
 		{  
 			i++; 

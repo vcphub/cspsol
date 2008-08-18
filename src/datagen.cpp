@@ -20,9 +20,9 @@ void generate_order_data(char * filename)
 	assert(fp != NULL);
 
 	fp << max_pattern_width << endl;
-	for(int i = 1; i <= max_pattern_width/10.0; i++) {
+	for(int i = 1; i <= max_pattern_width/20.0; i++) {
 		/* Consider each range in the interval of 10. */
-		width = i * 10;		
+		width = i * 20;		
 		/* Some random demand/order in the range 1 to 10. */
 		demand = rand() % 10 + 1;	
 
