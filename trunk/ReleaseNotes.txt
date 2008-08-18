@@ -4,7 +4,61 @@
 ---------------------------------------------------------------------
 
 ---------------------------------------------------------------------
-Date: 14 August 2008. Version 0.4 Released.
+Date: Monday, 18 August 2008. Version 0.5 Released.
+
+This release contains a long term solution to fix issue:
+http://code.google.com/p/cspsol/issues/detail?id=1
+
+The subproblem (knapsack problem) is now solved by dynamic programming (DP)
+algorithm. Quality of solution is given importance over total runtime. 
+Having access to all optimal integer solutions (which are used to generate 
+a new pattern) obtained using DP solves the issue.
+
+In the input data file, order widths and max. order width must be INTEGERs, in
+order for DP algorithm to work correctly. By default, this version does not
+require any modifications to GLPK source code.
+
+[Testcase]
+
+$ cspsol -d o1.txt 
+
+Reading order data from file o1.txt
+Total orders read from file = 2
+2000 4
+1000 4
+Add order demand constraints. Total rows, cols = 2, 0
+Added initial patterns. Total rows, cols = 2, 2
+Node    1: new patterns =    4 Obj Func Value = 2 Branch.
+Node    2: new patterns =    0 Obj Func Value = 2.33333 Branch.
+Node    3: new patterns =    0 Obj Func Value = 2 INTEGER ***
+Node    4: new patterns =    0 Obj Func Value = 3 INTEGER ***
+Node    5: new patterns =    0 LP worse than integer incumbent 2.5 >= 2. Fathom node. 
+
+Branch and bound tree exhausted.
+
+ # Solution Report # 
+
+Best integer obj. func. value = 2
+Pattern count =    1:  2000 x  3, 
+Pattern count =    1:  2000 x  1,  1000 x  4, 
+
+# Total runtime = 0 Secs
+
+[End Testcase]
+
+To solve subproblem using GLPK glp_int, instead of DP, new commandline option 
+--subintopt (--si) is introduced.
+
+$ cspsol --subintopt -d o1.txt
+
+To use option --wa, you must use patched GLPK lib which allows -ve tol_obj.
+
+$ cspsol --subintopt --wa -d o1.txt
+
+Type 'cspsol --help' for viewing changed help information.
+
+---------------------------------------------------------------------
+Date: Thursday, 14 August 2008. Version 0.4 Released.
 
 This release contains a workaound to solve issue described here:
 http://code.google.com/p/cspsol/issues/detail?id=1
