@@ -1,9 +1,11 @@
 #ifndef CMDLINE_H
 #define CMDLINE_H
 
-#include <fstream>
+#include<fstream>
+#include<vector>
 
 enum SearchStrategy {DFS, BFS};
+enum ReportFormat {TEXT, XML};
 
 class CmdOption
 {
@@ -22,7 +24,13 @@ class CmdOption
 		/* No progress output to standard terminal. */
 		bool silent; 
 		std::ofstream tout; /* Terminal outout redirection. */
+		std::streambuf * cout_buf;
 
+		/* Solution report formats. */
+		std::vector<ReportFormat> rformats;
+		std::vector<char*> rfilenames; 
+
+		/* Set default values in constructor. */
 		CmdOption();
 
 };

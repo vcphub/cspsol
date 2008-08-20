@@ -1,3 +1,6 @@
+/* File: pattern.cpp
+ * Description: 
+ */
 
 #include<vector>
 #include<string>
@@ -18,7 +21,6 @@ using namespace std;
 /* Global container to store all pattern objects. */
 vector<Pattern*> PatternList;
 double max_pattern_width;	 
-extern CmdOption * option;
 
 /*------------------------------------------------------------------------
  * Constructor
@@ -326,41 +328,6 @@ void Pattern::store_solution(glp_prob * master_lp)
 		(*pat_iter)->set_int_sol(int_sol);
 	}
 	lpx_write_cpxlp(master_lp, "best.lp");
-}
-
-
-/*------------------------------------------------------------------------
- * Precondition: Call to function store_solution.
- * Print stored solution patterns completely. 
-------------------------------------------------------------------------*/
-void Pattern::print_solution(ostream& fout, glp_prob * master_lp, OrderWidthContainer& ow_set)
-{
-	double x;
-
-	fout << endl << " # Solution Report # "<< endl << endl;
-	fout << "Best integer obj. func. value = " << BBNode::get_best_int_obj_val() << endl;
-
-	PatternIterator pat_iter = PatternList.begin();	
-	for(; pat_iter != PatternList.end(); pat_iter++) {
-		
-		//col_index = (*pat_iter)->get_master_col_num();
-		//x = glp_get_col_prim(master_lp, col_index);
-		x = (*pat_iter)->get_int_sol();
-		if(abs(x) <= EPSILON)
-			continue;
-
-		fout<< "Pattern count = "<<setw(4)<<x<<": ";
-
-		for(int i = 1; i <= (*pat_iter)->nzcnt; i++) {
-			int ow_row_index = (*pat_iter)->ind[i];
-			double ow_count = (*pat_iter)->val[i];
-
-			OrderWidth * ow;
-		       	ow = OrderWidth::find_orderwidth(ow_set, ow_row_index);
-			fout<<setw(5)<<ow->get_width() << " x " <<setw(2)<< ow_count <<", ";			
-		}
-		fout << endl;		
-	}
 }
 
 /* Clean up */

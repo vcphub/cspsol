@@ -53,24 +53,33 @@ void OrderWidth::read_order_data(OrderWidthContainer& ow_set, std::string filena
 {
 	ifstream fin;
 	double width;
-        int demand;
+ 	int demand;
 
-	fin.open(filename.c_str());
-	assert(fin != NULL);
-	cout << "Reading order data from file " << filename << endl;
+	if(filename == "stdin") {
+		cin >> max_pattern_width;
+		cin >> width >> demand;		
+		while(cin.eof() == 0)
+		{
+			OrderWidth * order = new OrderWidth(width, demand);
+			ow_set.push_back(order);
+			cin >> width >> demand;	 /* read next line */
+		}	
 
-	fin >> max_pattern_width;
-	fin >> width >> demand;		
-	while(fin.eof() == 0)
-	{
-		OrderWidth * order = new OrderWidth(width, demand);
-		ow_set.push_back(order);
-		
-		fin >> width >> demand;	 /* read next line */
-	}	
-
-	cout<<"Total orders read from file = "<<(ow_set.size())<<endl;
-	fin.close();
+	} else {
+		fin.open(filename.c_str());
+		assert(fin != NULL);
+		cout << "Reading order data from file " << filename << endl;
+		fin >> max_pattern_width;
+		fin >> width >> demand;		
+		while(fin.eof() == 0)
+		{
+			OrderWidth * order = new OrderWidth(width, demand);
+			ow_set.push_back(order);
+			fin >> width >> demand;	 /* read next line */
+		}	
+		cout<<"Total orders read from file = "<<(ow_set.size())<<endl;
+		fin.close();
+	}
 }
 
 /*------------------------------------------------------------------------

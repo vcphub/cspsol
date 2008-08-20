@@ -13,7 +13,9 @@
 using namespace std;
 #define parse_cla(str) (strcmp(argv[i], str) == 0)
 
-/* Constructor. */
+/*-------------------------------------------------------------------
+Constructor. 
+-------------------------------------------------------------------*/
 CmdOption::CmdOption()
 {
 	/* Set default values. */
@@ -26,7 +28,9 @@ CmdOption::CmdOption()
 	silent = false;
 }
 
-/* Print program usage. */
+/*-------------------------------------------------------------------
+Print program usage.
+-------------------------------------------------------------------*/
 void print_usage() 
 {
 	cout << endl;
@@ -44,8 +48,19 @@ void print_usage()
 	cout << "Options:"<<endl;
 	cout << "--dfs		Process branch and bound tree in depth first manner (default)."<<endl;
 	cout << "--bfs		Process branch and bound tree in breadth first manner."<<endl;
-	cout << "--silent,	No output printed to terminal."<<endl;
-	cout << "--si,		Use glp_intopt to solve subproblem (knapsack)."<<endl;
+	cout << "--silent	No output printed to terminal."<<endl;
+
+	cout << "--otext filename"<<endl;	
+	cout << "		Write solution to filename in text format."<<endl;
+	cout << "		If the filename is 'stdout' then solution is printed \
+to output terminal."<<endl<<endl;
+
+	cout << "--oxml filename"<<endl;	
+	cout << "		Write solution to filename in XML format."<<endl;
+	cout << "		If the filename is 'stdout' then solution is printed \
+to output terminal."<<endl<<endl;
+
+	cout << "--si		Use glp_intopt to solve subproblem (knapsack)."<<endl;
 	cout << "		By default dynamic programming is used."<<endl;
 
 	cout << "--wa		Use workaround to get alternate opt. int. sol."<<endl;
@@ -57,7 +72,9 @@ void print_usage()
 	exit(-1);
 }
 
-/* Process command line options. */
+/*-------------------------------------------------------------------
+Process command line options.
+-------------------------------------------------------------------*/
 CmdOption * process_arguments(int argc, char * argv[])
 {
 	CmdOption * option = new CmdOption();
@@ -92,7 +109,26 @@ CmdOption * process_arguments(int argc, char * argv[])
 				print_usage();
 			}    
 			option->data_file = argv[i];
+
+		} else if (parse_cla("--oxml")) {
+			i++; 
+			if (i == argc || argv[i][0] == '\0' || argv[i][0] == '-')  {
+				cerr << "cspsol error: Output solution report file NOT specified." << endl;
+				print_usage();
+			}    
+			option->rformats.push_back(XML);
+			option->rfilenames.push_back(argv[i]);
+
+		} else if (parse_cla("--otext")) {
+			i++; 
+			if (i == argc || argv[i][0] == '\0' || argv[i][0] == '-')  {
+				cerr << "cspsol error: Output solution report file NOT specified." << endl;
+				print_usage();
+			}    
+			option->rformats.push_back(TEXT);
+			option->rfilenames.push_back(argv[i]);
 		} 
+
 	}
 
 	if((i == argc)  && (option->data_file == NULL)) {
@@ -103,6 +139,7 @@ CmdOption * process_arguments(int argc, char * argv[])
 	if(option->silent == true) {
 		/* Redirect terminal output to file cout.txt opened using tout.*/
 		option->tout.open("cout.txt");
+		option->cout_buf = cout.rdbuf();
 		streambuf * tout_buf = option->tout.rdbuf();
 		cout.rdbuf(tout_buf);
 	}
