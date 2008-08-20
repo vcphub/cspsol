@@ -28,6 +28,8 @@ using namespace std;
 
 /* Global object to print debug information into a log file. */
 ofstream fout("log.txt");
+ofstream tout("cout.txt");
+
 bool workaround_flag = false;
 bool subintopt_flag = false;
 /* Global functions. */
@@ -98,7 +100,7 @@ int main(int argc, char * argv[])
 
 		else if(node->get_lp_status() == OPT_NONINT) {
 
-			if(node->get_opt_obj_val() >= BBNode::get_best_int_obj_val()) {
+			if(node->get_opt_obj_val() >= BBNode::get_best_int_obj_val()-1.0) {
 				cout << "LP worse than integer incumbent "<< node->get_opt_obj_val();
 				cout <<" >= " << BBNode::get_best_int_obj_val();
 				cout << ". Fathom node. "<<endl;
@@ -146,13 +148,14 @@ void print_usage()
 	cout << endl;
 
 	cout << "Options:"<<endl;
-	cout << "--dfs	Process branch and bound tree in depth first manner (default)."<<endl;
-	cout << "--bfs	Process branch and bound tree in breadth first manner."<<endl;
-	cout << "--si,	Use glp_intopt to solve subproblem (knapsack)."<<endl;
-	cout << "	By default dynamic programming is used."<<endl;
+	cout << "--dfs		Process branch and bound tree in depth first manner (default)."<<endl;
+	cout << "--bfs		Process branch and bound tree in breadth first manner."<<endl;
+	cout << "--silent,	No output printed to terminal."<<endl;
+	cout << "--si,		Use glp_intopt to solve subproblem (knapsack)."<<endl;
+	cout << "		By default dynamic programming is used."<<endl;
 
-	cout << "--wa	Use workaround to get alternate opt. int. sol."<<endl;
-	cout << "	To be used with --si. Needs changes/patch to GLPK lib."<<endl;
+	cout << "--wa		Use workaround to get alternate opt. int. sol."<<endl;
+	cout << "		To be used with --si. Needs changes/patch to GLPK lib."<<endl;
 
 	cout << "-h, --help	Display this help information and exit."<<endl;
 	cout << endl;
@@ -175,7 +178,11 @@ void process_arguments(int argc, char * argv[], char **file, SearchStrategy& sea
 			search = DFS;
 		else if(parse_cla("--bfs"))
 			search = BFS;
-		else if(parse_cla("--wa")) {
+		else if(parse_cla("--silent")) {
+			/* Redirect terminal output to file cout.txt opened using tout.*/
+			streambuf * tout_buf = tout.rdbuf();
+			cout.rdbuf(tout_buf);
+		} else if(parse_cla("--wa")) {
 			cout<<endl;
 			cout<<"IMP: Must use patched GLPK lib to allow -ve tol_obj."<<endl;
 			cout<<endl;
