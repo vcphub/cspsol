@@ -8,7 +8,6 @@
 #include "glpk.h"
 
 enum NodeStatus {NOT_SOLVED, OPT_NONINT, OPT_INT, REAL_INFEA, LOGIC_INFEA};
-enum SearchStrategy {DFS, BFS};
 
 class BBNode;	/* Forward declaration */
 

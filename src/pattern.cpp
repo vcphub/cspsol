@@ -11,14 +11,14 @@
 #include "pattern.h"
 #include "extern.h"
 #include "knapsack.h"
+#include "cmdline.h"
 
 using namespace std;
 
 /* Global container to store all pattern objects. */
 vector<Pattern*> PatternList;
 double max_pattern_width;	 
-extern bool workaround_flag;
-extern bool subintopt_flag;
+extern CmdOption * option;
 
 /*------------------------------------------------------------------------
  * Constructor
@@ -121,7 +121,7 @@ Pattern * Pattern::get_new_pattern(OrderWidthContainer& ow_set, int iter_count)
 {
 	Pattern * new_pat = NULL;
 
-	if(subintopt_flag == false) {
+	if(option->subintopt == false) {
 		// Solve subproblem using dynamic programming.
 		PatternContainer * solset;
 		solset = get_dp_solution(ow_set, max_pattern_width);
@@ -148,7 +148,7 @@ Pattern * Pattern::get_new_pattern(OrderWidthContainer& ow_set, int iter_count)
 
 			//new_pat->print_pattern();
 			/* Check if alternate optimal integer solution exists. */
-			if(workaround_flag == true) {
+			if(option->workaround == true) {
 				fout << "Got duplicate pattern. Looking for alternate." << endl;
 				new_pat = Pattern::generate_pattern(ow_set, iter_count, true);
 			}
