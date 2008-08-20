@@ -7,36 +7,27 @@
  */
 
 #include<iostream>
+#include<fstream>
+#include<iomanip>
 #include<string>
 #include<vector>
 #include<cassert>
-#include<cstdio>
 #include<stack>
 #include<queue>
 
-#include<fstream>
-#include<iomanip>
-#include<cstdlib>
 #include "glpk.h"
 #include "order_width.h"
 #include "pattern.h"
 #include "extern.h"
 #include "model.h"
 #include "bb_node.h"
+#include "cmdline.h"
 
 using namespace std;
 
 /* Global object to print debug information into a log file. */
 ofstream fout("log.txt");
-ofstream tout("cout.txt");
-
-bool workaround_flag = false;
-bool subintopt_flag = false;
-/* Global functions. */
-void print_usage();
-void process_arguments(int argc, char * argv[], char **file, SearchStrategy& search);
-
-#define parse_cla(str) (strcmp(argv[i], str) == 0)
+CmdOption * option;
 
 /* Program entry point */
 int main(int argc, char * argv[])
@@ -45,15 +36,14 @@ int main(int argc, char * argv[])
 	OrderWidthContainer ow_set;	
 	/* Container object represents branch and bound tree. */
 	BBNodeContainer bbnode_set;	
-	SearchStrategy search = DFS;
-	char * order_data_file = NULL;
+
 	time_t start_time, end_time;
-
 	time(&start_time);
-	/* Command line arguments. */
-	process_arguments(argc, argv, &order_data_file, search);
 
-	OrderWidth::read_order_data(ow_set, order_data_file);
+	/* Command line arguments. */
+	option = process_arguments(argc, argv);
+
+	OrderWidth::read_order_data(ow_set, option->data_file);
 	OrderWidth::print_order_list(ow_set);
 
 	/* Create master lp using GLPK API. */
@@ -78,10 +68,10 @@ int main(int argc, char * argv[])
 
 		/* Select next node from the tree. */
 		BBNode * node;
-		if(search == DFS) {
+		if(option->search == DFS) {
 	       	node = bbnode_set.front();
 			bbnode_set.pop_front();
-		} else if(search == BFS) {
+		} else if(option->search == BFS) {
 	       	node = bbnode_set.back();
 			bbnode_set.pop_back();
 		}
@@ -92,7 +82,6 @@ int main(int argc, char * argv[])
 
 		cout<<"Node "<<setw(4)<<(solved_node_cnt);
 		cout<<": new patterns = "<<setw(4)<<node->get_pat_cnt()<<" ";
-
 		
 		if(node->get_lp_status() == REAL_INFEA || 
 				node->get_lp_status() == LOGIC_INFEA)
@@ -113,7 +102,6 @@ int main(int argc, char * argv[])
 
 		} else if(node->get_lp_status() == OPT_INT) 
 			cout << "Obj Func Value = "<< node->get_opt_obj_val() <<" INTEGER ***"<<endl;
-
 	} 
 
 	/* Print solution report. */
@@ -125,84 +113,10 @@ int main(int argc, char * argv[])
 	glp_delete_prob(master_lp);
 	OrderWidth::clean_up(ow_set);
 	Pattern::clean_up();
+	delete(option);
+
 	time(&end_time);
 	cout << endl << "# Total runtime = "<< (end_time - start_time) << " Secs"<< endl;
 
 	return 0;
 }
-
-
-/* Print program usage. */
-void print_usage() 
-{
-	cout << endl;
-	cout << "Usage: cspsol [options...]" << " --data filename" << endl << endl;
-	cout << "Where filename contains orders data in following format." << endl;
-	cout << "max_pattern_width" << endl;
-	cout << "order_width_1 demand_1" << endl;
-	cout << "order_width_2 demand_2" << endl;
-	cout << "order_width_n demand_n" << endl << endl;
-
-	cout << "All order widths must be <= max_pattern_width." << endl;
-	cout << "All demands, order widths and max_pattern_width must be INTEGERs." << endl;
-	cout << endl;
-
-	cout << "Options:"<<endl;
-	cout << "--dfs		Process branch and bound tree in depth first manner (default)."<<endl;
-	cout << "--bfs		Process branch and bound tree in breadth first manner."<<endl;
-	cout << "--silent,	No output printed to terminal."<<endl;
-	cout << "--si,		Use glp_intopt to solve subproblem (knapsack)."<<endl;
-	cout << "		By default dynamic programming is used."<<endl;
-
-	cout << "--wa		Use workaround to get alternate opt. int. sol."<<endl;
-	cout << "		To be used with --si. Needs changes/patch to GLPK lib."<<endl;
-
-	cout << "-h, --help	Display this help information and exit."<<endl;
-	cout << endl;
-
-	exit(-1);
-}
-
-/* Process command line options. */
-void process_arguments(int argc, char * argv[], char **file, SearchStrategy& search)
-{
-
-	/* Parse the argument */
-	if(argc == 1)
-		print_usage();
-	int i;
-	for(i = 1; i < argc; i++) {
-		if(parse_cla("--help") || parse_cla("-h"))
-			print_usage();
-		if(parse_cla("--dfs"))
-			search = DFS;
-		else if(parse_cla("--bfs"))
-			search = BFS;
-		else if(parse_cla("--silent")) {
-			/* Redirect terminal output to file cout.txt opened using tout.*/
-			streambuf * tout_buf = tout.rdbuf();
-			cout.rdbuf(tout_buf);
-		} else if(parse_cla("--wa")) {
-			cout<<endl;
-			cout<<"IMP: Must use patched GLPK lib to allow -ve tol_obj."<<endl;
-			cout<<endl;
-			workaround_flag = true;
-		} else if(parse_cla("--subintopt") || parse_cla("--si"))
-			subintopt_flag = true;
-		else if (parse_cla("-d") || parse_cla("--data"))
-		{  
-			i++; 
-			if (i == argc || argv[i][0] == '\0' || argv[i][0] == '-')  {
-				printf("cspsol rrror: Orders data file NOT specifed");
-				print_usage();
-			}    
-			*(file) = argv[i];
-		} 
-	}
-
-	if((i == argc)  && (*file == NULL)) {
-		printf("cspsol rrror: Orders data file NOT specifed");
-		print_usage();
-	}
-}
-
