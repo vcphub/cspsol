@@ -4,6 +4,30 @@
 ---------------------------------------------------------------------
 
 ---------------------------------------------------------------------
+Date: Wednesday, 20 August 2008. Version 0.6 Released.
+
+Contains new features.
+
+1. Added new command line options --silent, --otext, --oxml.
+Options --otext and --oxml can be used to generate output solution 
+report in text and xml formats. 
+
+2. If input file name is 'stdin' then input is read from standard
+input. For example:
+
+$cat input.txt | cspsol -d stdin
+
+3. For options, --otext, --oxml, if output file name is 'stdout' 
+then solution report is printed to standard output.
+
+4. Option will --silent will not print any progress messages on
+standard output. However if options --otext or --oxml specify 'stdout' as 
+filename then solution will be printed on standard output.
+
+5. By default (cspsol -d input.txt), progress messages and solution report 
+are printed to standard output.
+
+---------------------------------------------------------------------
 Date: Monday, 18 August 2008. Version 0.5 Released.
 
 This release contains a long term solution to fix issue:
