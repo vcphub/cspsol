@@ -46,8 +46,11 @@ public:
 	static bool check_duplicate(Pattern * pattern);
 	void print_pattern();
 
-	static void print_solution(std::ostream& fout, glp_prob* master_lp, 
-			OrderWidthContainer& ow_set);
+	static void print_solution(glp_prob* master_lp, OrderWidthContainer& ow_set);
+
+	static void print_xml_report(std::ostream&, glp_prob * master_lp, OrderWidthContainer& ow_set); 
+	static void print_text_report(std::ostream&, glp_prob * master_lp, OrderWidthContainer& ow_set);
+
 	static void store_solution(glp_prob * master_lp);
 	static void clean_up();
 

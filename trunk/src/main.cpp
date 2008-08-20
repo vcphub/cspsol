@@ -27,7 +27,7 @@ using namespace std;
 
 /* Global object to print debug information into a log file. */
 ofstream fout("log.txt");
-CmdOption * option;
+CmdOption * option = NULL;
 
 /* Program entry point */
 int main(int argc, char * argv[])
@@ -55,7 +55,6 @@ int main(int argc, char * argv[])
 	glp_set_obj_dir(master_lp, GLP_MIN);
 
 	add_demand_constraints(master_lp, ow_set);
-	//add_slack_variables(master_lp, ow_set);
 	add_init_patterns(master_lp, ow_set);
 
 	/* Create root BB node. */
@@ -106,17 +105,17 @@ int main(int argc, char * argv[])
 
 	/* Print solution report. */
 	cout << endl << "Branch and bound tree exhausted." << endl;
-	Pattern::print_solution(fout, master_lp, ow_set);
-	Pattern::print_solution(cout, master_lp, ow_set);
+	time(&end_time);
+	cout << endl << "# Total runtime = "<< (end_time - start_time) << " Secs"<< endl;
+
+	Pattern::print_text_report(cout, master_lp, ow_set);
+	Pattern::print_solution(master_lp, ow_set);
 
 	/* Memory cleanup and exit. */
 	glp_delete_prob(master_lp);
 	OrderWidth::clean_up(ow_set);
 	Pattern::clean_up();
 	delete(option);
-
-	time(&end_time);
-	cout << endl << "# Total runtime = "<< (end_time - start_time) << " Secs"<< endl;
 
 	return 0;
 }
