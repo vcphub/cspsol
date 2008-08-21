@@ -86,5 +86,38 @@ void Pattern::print_text_report(ostream& fout, glp_prob * master_lp, OrderWidthC
 -------------------------------------------------------------------*/
 void Pattern::print_xml_report(ostream& fout, glp_prob * master_lp, OrderWidthContainer& ow_set) 
 {
-	fout << "TODO: XML Solution report" << endl;
+        double x;
+        int patcnt;
+        int cutcnt;
+
+        fout << "<solution>"<< endl;
+        fout << "\t<stockcount>" << BBNode::get_best_int_obj_val() << "</stockcount>" << endl;
+
+        PatternIterator pat_iter = PatternList.begin(); 
+        for(; pat_iter != PatternList.end(); pat_iter++) {
+                
+                //col_index = (*pat_iter)->get_master_col_num();
+                //x = glp_get_col_prim(master_lp, col_index);
+                x = (*pat_iter)->get_int_sol();
+                if(abs(x) <= EPSILON)
+                        continue;
+                for (patcnt=0;patcnt<x;patcnt++) {
+                        fout<< "\t<pattern>"<<endl;
+
+                        for(int i = 1; i <= (*pat_iter)->nzcnt; i++) {
+                                int ow_row_index = (*pat_iter)->ind[i];
+                                double ow_count = (*pat_iter)->val[i];
+
+                                OrderWidth * ow;
+                                ow = OrderWidth::find_orderwidth(ow_set, ow_row_index);
+                                for (cutcnt=0;cutcnt<ow_count;cutcnt++)
+                                {
+                                        fout<<"\t\t<cut>"<<ow->get_width() << "</cut>" << endl;
+                                }
+                        }
+                        fout << "\t</pattern>" << endl;
+                }
+        }
+        fout << "</solution>"<< endl;
+
 }
