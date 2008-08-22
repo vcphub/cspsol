@@ -4,6 +4,60 @@
 ---------------------------------------------------------------------
 
 ---------------------------------------------------------------------
+Date: Friday, 22 August 2008. Version 0.7 Released.
+
+This release contains a bug fix and new features for users and developers.
+
+1. Uninitialized variable caused a bug in last version. Fixed it.
+Thanks to Guillaume Jacquenot for bug reports and patience.
+
+2. Henry Palonen completed XML solution report feature.
+Related command line option '--oxml filename' was introduced in last version.
+Thanks Henry.
+
+3. For developers interested in testing cspsol against different test
+cases, added new feature do make this easy.
+
+New command line option '--test filename' runs all test cases specified
+in the test specification file 'filename'. The filename format is:
+
+N
+order-data-file-name1 expected_opt_value1
+order-data-file-name2 expected_opt_value2
+order-data-file-nameN expected_opt_valueN
+ 
+where N is number of test cases. Sample test specs file and test cases
+can be found in directory cspsol/data. 
+
+$ cat allcases.txt 
+6
+case1.txt 2
+case2.txt 32
+case3.txt 15
+case4.txt 18
+case5.txt 9
+case6.txt 4
+$
+$ cspsol --test allcases.txt.
+Solving testcase no. 1... Done. 
+Testcase: 1 Expected = 2, Actual = 2 PASS
+
+Solving testcase no. 2... Done. 
+Testcase: 2 Expected = 32, Actual = 32 PASS
+
+Solving testcase no. 3... Done. 
+Testcase: 3 Expected = 15, Actual = 15 PASS
+
+Solving testcase no. 4... Done. 
+Testcase: 4 Expected = 18, Actual = 18 PASS
+
+Solving testcase no. 5... Done. 
+Testcase: 5 Expected = 9, Actual = 9 PASS
+
+Solving testcase no. 6... Done. 
+Testcase: 6 Expected = 4, Actual = 4 PASS
+
+---------------------------------------------------------------------
 Date: Wednesday, 20 August 2008. Version 0.6 Released.
 
 Contains new features.
