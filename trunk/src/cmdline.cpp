@@ -21,6 +21,8 @@ CmdOption::CmdOption()
 	/* Set default values. */
 	search = DFS;
 	data_file = NULL;
+	test = false; 	/* no testing. */
+	tc_file = NULL;
 
 	workaround = false;
 	subintopt = false;
@@ -88,7 +90,16 @@ CmdOption * process_arguments(int argc, char * argv[])
 		if(parse_cla("--help") || parse_cla("-h"))
 			print_usage();
 
-		if(parse_cla("--dfs"))
+		else if(parse_cla("--test")) {
+			i++; 
+			if (i == argc || argv[i][0] == '\0' || argv[i][0] == '-')  {
+				cerr << "cspsol error: Testcases file NOT specified." << endl;
+				print_usage();
+			}    
+			option->tc_file = argv[i];
+			option->test = true;
+
+		} else if(parse_cla("--dfs"))
 			option->search = DFS;
 		else if(parse_cla("--bfs"))
 			option->search = BFS;
@@ -102,6 +113,7 @@ CmdOption * process_arguments(int argc, char * argv[])
 
 		} else if(parse_cla("--subintopt") || parse_cla("--si")) {
 			option->subintopt = true;
+
 		} else if (parse_cla("-d") || parse_cla("--data")) {
 			i++; 
 			if (i == argc || argv[i][0] == '\0' || argv[i][0] == '-')  {
@@ -131,19 +143,31 @@ CmdOption * process_arguments(int argc, char * argv[])
 
 	}
 
-	if((i == argc)  && (option->data_file == NULL)) {
+	if((i == argc) && (option->data_file == NULL) && 
+					(option->tc_file == NULL)) {
 		cerr << "cspsol error: Orders data file NOT specified." << endl;
 		print_usage();
 	}
 
 	if(option->silent == true) {
 		/* Redirect terminal output to file cout.txt opened using tout.*/
-		option->tout.open("cout.txt");
-		option->cout_buf = cout.rdbuf();
-		streambuf * tout_buf = option->tout.rdbuf();
-		cout.rdbuf(tout_buf);
+		option->redirect_cout();
 	}
 
 	return option;
 }
 
+/* Redirect terminal output to file cout.txt opened using tout.*/
+void CmdOption::redirect_cout()
+{
+	this->tout.open("cout.txt");
+	this->cout_buf = cout.rdbuf();
+	streambuf * tout_buf = this->tout.rdbuf();
+	cout.rdbuf(tout_buf);
+}
+
+void CmdOption::restore_cout()
+{
+	if(this->silent == true)
+		cout.rdbuf(this->cout_buf);
+}

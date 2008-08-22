@@ -23,5 +23,6 @@ extern CmdOption * option;
 extern std::queue<BBNode*> BBStack;
 
 extern const double EPSILON;
+extern const double Infinity;
 
 #endif

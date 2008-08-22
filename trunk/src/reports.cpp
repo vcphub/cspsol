@@ -25,8 +25,7 @@ void Pattern::print_solution(glp_prob * master_lp, OrderWidthContainer& ow_set)
 		char * filename = option->rfilenames[i];
 
 		/* Restore cout to original state. */
-		if(option->silent == true)
-			cout.rdbuf(option->cout_buf);
+		option->restore_cout();
 
 		if(option->rformats[i] == TEXT) {
 
