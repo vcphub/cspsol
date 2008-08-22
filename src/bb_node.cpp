@@ -48,7 +48,6 @@ LP is solved using column/pattern generation.
 ------------------------------------------------------------------------*/
 void BBNode::solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set)
 {
-	bool cg_status, lp_status;
 
 	fout<<endl<< "["<<(this->node_id)<<"]"<<" Solving BB Node"<<endl<<endl;
 
@@ -62,9 +61,11 @@ void BBNode::solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set)
 
 	/* Column generation Loop, while new pattern is found. */
 	int iter_count = 1, pat_cnt = 0;
-	do {
+	while (true) {
+
 		/* Solve master problem associated with this BB node. */
-		lp_status = glp_simplex(master_lp, NULL);
+		int lp_status;
+	   	lp_status = glp_simplex(master_lp, NULL);
 		assert(lp_status == 0);
 
 		if(glp_get_status(master_lp) != GLP_OPT) break;
@@ -79,20 +80,19 @@ void BBNode::solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set)
 		/* Generate best pattern by solving subproblem. */
 		Pattern * pattern;
 	   	pattern = Pattern::get_new_pattern(ow_set, iter_count);
+
+		/* Could be NULL, because of new pattern could not be generated. */
 		if(pattern == NULL) break;
 
-		cg_status = add_pattern(master_lp, pattern); /* BUG fix. */
+		add_pattern(master_lp, pattern); 
 		pat_cnt++;
 		iter_count++;
 		cout<<".";
-	} while(cg_status == true);
+	} 
 
 	this->pat_cnt = pat_cnt;
 	if(glp_get_status(master_lp) != GLP_OPT)
 		this->lp_status = REAL_INFEA;
-
-	//else if(nonzero_slack_vars(master_lp) == true)  
-		//this->lp_status = LOGIC_INFEA; 
 
 	else if(this->int_sol() == true) {
 		this->opt_obj_val = glp_get_obj_val(master_lp); 
@@ -103,6 +103,7 @@ void BBNode::solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set)
 			BBNode::set_best_int_obj_val(this->opt_obj_val);
 			Pattern::store_solution(master_lp);
 		}
+
 	} else {
 		this->opt_obj_val = glp_get_obj_val(master_lp); 
 		this->lp_status = OPT_NONINT;

@@ -128,36 +128,31 @@ void store_dual_values(glp_prob * lp, OrderWidthContainer& ow_set)
 }
 
 /*------------------------------------------------------------------------
-Desciption: Try to add new best pattern to the model and global 
-container PatternList.
-Return value:
++ Description: Try to add new best pattern to the model and global 
+container PatternList. 
++ Arguments: glp_prob object, Pattern object, guaranteed to be new.
++ Return value:
 true = New pattern added successfully.
-false = Duplicate pattern NOT added. 
 ------------------------------------------------------------------------*/
 bool add_pattern(glp_prob * master_lp, Pattern * pattern)
 {
 	int col_index = 0;
 	
 	assert(pattern != NULL);
-	if(Pattern::check_duplicate(pattern) == false) {
 
-		/* Add to global container PatterList. */
-		PatternList.push_back(pattern);
+	/* Add to global container PatterList. */
+	PatternList.push_back(pattern);
 
-		col_index = glp_get_num_cols(master_lp) + 1;
-		glp_add_cols(master_lp, 1);
-		glp_set_obj_coef(master_lp, col_index, 1.0);
-		glp_set_col_bnds(master_lp, col_index, GLP_LO, 0.0, 0.0);
-		glp_set_col_kind(master_lp, col_index, GLP_IV);
-		glp_set_mat_col(master_lp, col_index, pattern->nzcnt, pattern->ind, pattern->val);
+	col_index = glp_get_num_cols(master_lp) + 1;
+	glp_add_cols(master_lp, 1);
+	glp_set_obj_coef(master_lp, col_index, 1.0);
+	glp_set_col_bnds(master_lp, col_index, GLP_LO, 0.0, 0.0);
+	glp_set_col_kind(master_lp, col_index, GLP_IV);
+	glp_set_mat_col(master_lp, col_index, pattern->nzcnt, pattern->ind, pattern->val);
 		
-		pattern->set_master_col_num(col_index);
+	pattern->set_master_col_num(col_index);
 
-		return true;
-	} else {
-		//cout << "Duplicate patten, not added to the master problem." << endl;
-		return false;
-	}
+	return true;
 }
 
 /*------------------------------------------------------------------------
