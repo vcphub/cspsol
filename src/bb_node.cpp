@@ -57,6 +57,9 @@ void BBNode::solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set)
 	/* Fix variables using node data. */
 	this->fix_vars();
 
+	if(this->node_id == 1) 
+		cout<<"Solving root node ..."; cout.flush();
+
 	/* Column generation Loop, while new pattern is found. */
 	int iter_count = 1, pat_cnt = 0;
 	do {
@@ -78,11 +81,10 @@ void BBNode::solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set)
 	   	pattern = Pattern::get_new_pattern(ow_set, iter_count);
 		if(pattern == NULL) break;
 
-		add_pattern(master_lp, pattern);
+		cg_status = add_pattern(master_lp, pattern); /* BUG fix. */
 		pat_cnt++;
-
 		iter_count++;
-
+		cout<<".";
 	} while(cg_status == true);
 
 	this->pat_cnt = pat_cnt;
@@ -107,6 +109,7 @@ void BBNode::solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set)
 	}
 
 	if(this->node_id == 1) {
+		cout<<" Done."<<endl;
 		lpx_write_cpxlp(master_lp, "master-root.lp");
 	}
 }
@@ -289,3 +292,18 @@ Clean Up
 BBNode::~BBNode(void)
 {
 }
+
+/*------------------------------------------------------------------------
+Clean up objects in ow_set.
+------------------------------------------------------------------------*/
+void BBNode::clean_up(BBNodeContainer& bbset)
+{
+	BBNodeIterator iter = bbset.begin();	
+	for(; iter != bbset.end(); iter++) {
+		delete(*iter);
+		(*iter) = NULL;
+	}
+	bbset.clear();
+}
+
+

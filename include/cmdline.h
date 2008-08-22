@@ -30,8 +30,14 @@ class CmdOption
 		std::vector<ReportFormat> rformats;
 		std::vector<char*> rfilenames; 
 
+		/* Run testcases. */
+		bool test; 
+		char * tc_file; 
+
 		/* Set default values in constructor. */
 		CmdOption();
+		void redirect_cout();
+		void restore_cout();
 
 };
 

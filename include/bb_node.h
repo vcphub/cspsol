@@ -13,6 +13,7 @@ class BBNode;	/* Forward declaration */
 
 /* Queue is used to implement Breadth First Search */
 typedef std::deque<BBNode*> BBNodeContainer;
+typedef std::deque<BBNode*>::iterator BBNodeIterator;
 typedef std::vector<int> IntContainer;
 typedef std::vector<double> DblContainer;
 
@@ -61,6 +62,7 @@ public:
 	void fix_vars();
 
 	void print_lp_file(int iter_count);
+	static void clean_up(BBNodeContainer& bbset);
 };
 
 
