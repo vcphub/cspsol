@@ -14,6 +14,7 @@
 #include<cassert>
 #include<stack>
 #include<queue>
+#include<cmath>
 
 #include "glpk.h"
 #include "order_width.h"
@@ -28,7 +29,7 @@ using namespace std;
 /* Global object to print debug information into a log file. */
 ofstream fout("log.txt");
 CmdOption * option = NULL;
-int solve_csp();
+double solve_csp();
 void run_testcases();
 
 /* Program entry point */
@@ -54,7 +55,7 @@ int main(int argc, char * argv[])
  * 'option'.
  * Return value: Optimal integer solution's obj. value. 
 -------------------------------------------------------------------*/
-int solve_csp()
+double solve_csp()
 {
 	/* Container for storing all order objects. */
 	OrderWidthContainer ow_set;	
@@ -133,7 +134,7 @@ int solve_csp()
 	Pattern::print_text_report(cout, master_lp, ow_set);
 	Pattern::print_solution(master_lp, ow_set);
 
-	int ret_val = BBNode::get_best_int_obj_val();
+	double ret_val = BBNode::get_best_int_obj_val();
 	/* Memory cleanup and exit. */
 	glp_delete_prob(master_lp);
 	OrderWidth::clean_up(ow_set);
@@ -166,7 +167,7 @@ void run_testcases()
 
 	/* For all test cases. */
 	for(int tc = 1; tc <= tc_count; tc++) {
-		int exp_opt_val;
+		double exp_opt_val;
 		char filename[64];
 
 		cout<<"Solving testcase no. "<< tc <<"...";
@@ -178,14 +179,14 @@ void run_testcases()
 		option->data_file = filename;
 
 		/* Solve this test case. */
-		int opt_val = solve_csp();
+		double opt_val = solve_csp();
 
 		option->restore_cout();
 		cout<<" Done. "<<endl;
 
 		cout<<"Testcase: "<<tc;
 		cout<<" Expected = "<<exp_opt_val<<", Actual = "<<opt_val;
-		if(opt_val == exp_opt_val)
+		if(fabs(opt_val - exp_opt_val) < 1e-7)
 			cout<<" PASS"<<endl<<endl;
 		else				
 			cout<<" FAIL"<<endl<<endl;
