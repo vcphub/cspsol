@@ -87,7 +87,7 @@ void BBNode::solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set)
 		add_pattern(master_lp, pattern); 
 		pat_cnt++;
 		iter_count++;
-		cout<<".";
+		cout<<"."; cout.flush();
 	} 
 
 	this->pat_cnt = pat_cnt;
