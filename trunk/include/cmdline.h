@@ -21,6 +21,9 @@ class CmdOption
 		/* Workaround for multiple solutions. */
 		bool workaround; 
 
+		/* Optimization level. Control runtime and memory. */
+		double opt_level;
+
 		/* No progress output to standard terminal. */
 		bool silent; 
 		std::ofstream tout; /* Terminal outout redirection. */

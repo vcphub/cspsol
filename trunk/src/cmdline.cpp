@@ -28,6 +28,7 @@ CmdOption::CmdOption()
 	subintopt = false;
 
 	silent = false;
+	opt_level = 1.0;
 }
 
 /*-------------------------------------------------------------------
@@ -50,6 +51,9 @@ void print_usage()
 	cout << "Options:"<<endl;
 	cout << "--dfs		Process branch and bound tree in depth first manner (default)."<<endl;
 	cout << "--bfs		Process branch and bound tree in breadth first manner."<<endl;
+	cout << "-Olevel		Optimization level (1 to 3). Default value is 1.";
+	cout << "Higher level may take more time and memory."<<endl;
+
 	cout << "--silent	No output printed to terminal."<<endl;
 
 	cout << "--otext filename"<<endl;	
@@ -103,6 +107,12 @@ CmdOption * process_arguments(int argc, char * argv[])
 			option->search = DFS;
 		else if(parse_cla("--bfs"))
 			option->search = BFS;
+		else if(parse_cla("-O1"))
+			option->opt_level = 1.0;
+		else if(parse_cla("-O2"))
+			option->opt_level = 2.0;
+		else if(parse_cla("-O3"))
+			option->opt_level = 3.0;
 		else if(parse_cla("--silent"))
 			option->silent = true;
 		else if(parse_cla("--wa")) {
