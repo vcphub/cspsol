@@ -4,6 +4,45 @@
 ---------------------------------------------------------------------
 
 ---------------------------------------------------------------------
+Date: Saturday, 30 August 2008. Version 0.8 Released.
+
+This release addresses issues faced while solving large input.
+
+BUG fix: Fixed bug in logic related to option --test. 
+
+Introduced commandline option '-Olevel' to control optimization 
+level (how close solution is to true optimal). Valid values 
+of level are 1, 2 and 3. Default value is 1.0
+
+This value of optimization level controls number of solutions
+stored (in memory) while solving knapsack problem. This in turn 
+determines the runtime and memory consumed.
+
+Higher value of level means more number of solutions are stored, 
+and requires higher runtime and more memory. Higher value of level
+is likely to produce all patterns and hence final solution will be
+closer to true optimal integer solution. For example:
+
+$ cspsol -d ../data/case6.txt
+Best integer obj. func. value = 6
+
+$ cspsol -O3 -d ../data/case6.txt
+Best integer obj. func. value = 5
+
+Future plan: To get true optimal solutions in reasonable time, we need
+make following changes:
+
+- Use column generation to generate patterns at each node of branch and 
+bound tree. Right now we do it only for root node.
+
+- Generate only one optimal solution to knapsack sub-problem. Right now
+we have multiple optimal solutions, which causes exponential increase in
+memory required to store all solutions.
+
+- Store generating pattern is reduced cost of generated pattern is greater 
+than 0.0. Right now we do it till no new pattern is generated.
+
+---------------------------------------------------------------------
 Date: Friday, 22 August 2008. Version 0.7 Released.
 
 This release contains a bug fix and new features for users and developers.
