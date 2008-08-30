@@ -15,6 +15,7 @@
 #include<stack>
 #include<queue>
 #include<cmath>
+#include<ctime>
 
 #include "glpk.h"
 #include "order_width.h"
@@ -26,10 +27,17 @@
 
 using namespace std;
 
+/* Result of a test case. */
+struct TestCaseSol 
+{
+	double obj_val; /* Optimal integer solution. */
+	time_t runtime; /* Time taken in secs. */
+};
+
 /* Global object to print debug information into a log file. */
 ofstream fout("log.txt");
 CmdOption * option = NULL;
-double solve_csp();
+TestCaseSol * solve_csp();
 void run_testcases();
 
 /* Program entry point */
@@ -55,7 +63,7 @@ int main(int argc, char * argv[])
  * 'option'.
  * Return value: Optimal integer solution's obj. value. 
 -------------------------------------------------------------------*/
-double solve_csp()
+TestCaseSol * solve_csp()
 {
 	/* Container for storing all order objects. */
 	OrderWidthContainer ow_set;	
@@ -134,14 +142,18 @@ double solve_csp()
 	Pattern::print_text_report(cout, master_lp, ow_set);
 	Pattern::print_solution(master_lp, ow_set);
 
-	double ret_val = BBNode::get_best_int_obj_val();
+	/* Store result and other info. into a object. */
+	TestCaseSol * result = new TestCaseSol();
+	result->obj_val = BBNode::get_best_int_obj_val();
+	result->runtime = end_time-start_time;
+
 	/* Memory cleanup and exit. */
 	glp_delete_prob(master_lp);
 	OrderWidth::clean_up(ow_set);
 	Pattern::clean_up();
 	BBNode::clean_up(bbnode_set);
 
-	return ret_val;
+	return result;
 }
 
 /*-------------------------------------------------------------------
@@ -165,6 +177,9 @@ void run_testcases()
 	ftc.open(option->tc_file);				
 	ftc >> tc_count; /* test case count */
 
+	time_t start_time, end_time;
+	time(&start_time);
+
 	/* For all test cases. */
 	for(int tc = 1; tc <= tc_count; tc++) {
 		double exp_opt_val;
@@ -179,17 +194,25 @@ void run_testcases()
 		option->data_file = filename;
 
 		/* Solve this test case. */
-		double opt_val = solve_csp();
+		TestCaseSol * result = solve_csp();
 
 		option->restore_cout();
 		cout<<" Done. "<<endl;
 
-		cout<<"Testcase: "<<tc;
-		cout<<" Expected = "<<exp_opt_val<<", Actual = "<<opt_val;
-		if(fabs(opt_val - exp_opt_val) < 1e-7)
-			cout<<" PASS"<<endl<<endl;
+		cout<<"Testcase #"<< tc << ": ";
+		cout<<" Expected = "<< setw(4) << exp_opt_val;
+		cout<<", Actual = "<< setw(4) << result->obj_val;
+		cout<<", Runtime = " << setw(4) << result->runtime << " Secs.";
+
+		/* Compare obj. func. value with expected value. */
+		if(fabs(result->obj_val - exp_opt_val) < 1e-7)
+			cout<<" PASS."<<endl<<endl;
 		else				
-			cout<<" FAIL"<<endl<<endl;
+			cout<<" FAIL."<<endl<<endl;
+
+		delete(result);
 	}
+	time(&end_time);
+	cout<<"Finished all test cases in "<<(end_time-start_time)<<" Secs."<<endl<<endl;
 }
 

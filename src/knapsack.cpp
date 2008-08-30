@@ -1,7 +1,9 @@
 
 #include <cassert>
+#include <cmath>
 #include "knapsack.h"
 #include "pattern.h"
+#include "extern.h"
 
 using namespace std;
 
@@ -131,6 +133,11 @@ KnapSolSet * opt_sol_set(OrderWidthContainer& owc, int max_width)
 			new_sp->val[bi] += 1;
 			new_ss->add_solution(new_sp);
 		}
+
+		/* Control the number of solutions. */
+		int max_sol_cnt = max_width/powf(10.0, 4.0-option->opt_level);
+		if((int)new_ss->solutions.size() > max_sol_cnt)
+			break; 
 	}
 
 	/* Return the best solution. */
