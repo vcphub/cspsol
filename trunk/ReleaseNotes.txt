@@ -223,3 +223,61 @@ Pattern count =    2:  2000 x  2,  1000 x  2,
 # Total runtime = 0 Secs
 
 ---------------------------------------------------------------------
+Date: Monday, 31 March 2008. Version 0.3 Released.
+
+1. Now CG is done only at the root node of BB tree. CG at all nodes of
+BB tree requires some more thought.
+2. Removed slack variables, instead added trivial patterns to the
+master problem. (as Andrew suggested.)
+3. Now order width can be integer/float.
+4. Improved formatting etc.
+5. Moved files INSTALL and README from /src to parent dir.
+6. Updated homepage http://code.google.com/p/cspsol/
+
+---------------------------------------------------------------------
+Date: Sunday, 30 March 2008. Version 0.2 Released.
+
+Added some command line options. Added support for two search
+strategies (DFS and BFS).
+
+$ cspsol --help
+
+Usage: cspsol [options...] --data filename
+
+Where filename contains orders data in following format.
+maximum_pattern_width
+order_width_1 demand_1
+order_width_2 demand_2
+order_width_n demand_n
+
+All demand quantities are <= maximum_pattern_width.
+
+Options:
+--dfs           Process branch and bound tree in depth first manner.
+--bfs           Process branch and bound tree in breadth first manner.
+-h, --help      Display this help information and exit.
+
+---------------------------------------------------------------------
+Date: Saturday, 29 March 2008. Version 0.1 Released.
+
+Following mail posted on GLPK mailing list announcing version 0.1.
+
+"I wrote a program to solve cutting stock problem. Program is written
+in C++ and uses GLPK C API.  Customized branch & bound (BB) algorithm
+is used. Each node of BB tree is a LP. Each node LP is solved using
+column generation (CG). Very simple branching on fractional variable
+is used to obtain integer solution. BB tree is traversed using breadth
+first search (BFS) strategy.
+
+Hopefully program will be useful to anyone interested in learning GLPK
+C API and understand column generation technique. In case you want to
+have a look at the source code, following web-page has more details,
+including source code:
+
+http://code.google.com/p/cspsol/
+
+I have not tested the program extensively. It is likely that program
+has some flaw or incorrect use of GLPK C API. Your feedback/comments
+are welcome."
+
+---------------------------------------------------------------------
