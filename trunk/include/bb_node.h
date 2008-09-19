@@ -5,6 +5,7 @@
 #include<vector>
 #include<deque>
 #include "order_width.h"
+#include "pattern.h"
 #include "glpk.h"
 
 enum NodeStatus {NOT_SOLVED, OPT_NONINT, OPT_INT, REAL_INFEA};
@@ -31,6 +32,7 @@ class BBNode
 	/* Pointer to master problem object. */
 	glp_prob * master_lp;
 	NodeStatus lp_status;	/* Status of master_lp after solving it. */
+	PatternContainer pattern_list;
 
 	/* Optimal objective function value of the lp. */
 	double opt_obj_val;	
@@ -62,8 +64,14 @@ public:
 	void branch(BBNodeContainer& bbnode_set);
 
 
+	bool check_duplicate(Pattern * pattern);
 	void unfix_all_vars();
 	void fix_vars();
+
+	void store_solution(glp_prob * master_lp);
+	void print_solution(glp_prob* master_lp, OrderWidthContainer& ow_set);
+	void print_xml_report(std::ostream&, glp_prob * master_lp, OrderWidthContainer& ow_set); 
+	void print_text_report(std::ostream&, glp_prob * master_lp, OrderWidthContainer& ow_set);
 
 	void print_lp_file(int iter_count);
 	static void clean_up(BBNodeContainer& bbset);

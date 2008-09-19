@@ -11,9 +11,9 @@
 #include "bb_node.h"
 #include "cmdline.h"
 
-extern std::vector<OrderWidth*> OrderWidthList;
-extern std::vector<Pattern*> PatternList;
-extern std::vector<int> SlackIndexList;
+extern OrderWidthContainer OrderWidthList;
+extern PatternContainer AllPatternList;
+extern BBNode * BestNode;
 
 extern double max_pattern_width;
 extern std::ofstream fout;

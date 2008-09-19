@@ -98,10 +98,10 @@ TestCaseSol * solve_csp()
 
 		/* Select next node from the tree. */
 		BBNode * node;
-		if(option->search == DFS) {
+		if(option->search == BFS) {
 	       	node = bbnode_set.front();
 			bbnode_set.pop_front();
-		} else if(option->search == BFS) {
+		} else if(option->search == DFS) {
 	       	node = bbnode_set.back();
 			bbnode_set.pop_back();
 		}
@@ -138,8 +138,8 @@ TestCaseSol * solve_csp()
 	time(&end_time);
 	cout << endl << "# Total runtime = "<< (end_time - start_time) << " Secs"<< endl;
 
-	Pattern::print_text_report(cout, master_lp, ow_set);
-	Pattern::print_solution(master_lp, ow_set);
+	BestNode->print_text_report(cout, master_lp, ow_set);
+	BestNode->print_solution(master_lp, ow_set);
 
 	/* Store result and other info. into a object. */
 	TestCaseSol * result = new TestCaseSol();

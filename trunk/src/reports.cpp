@@ -17,7 +17,7 @@ using namespace std;
  * Precondition: Call to function store_solution.
  * Print stored solution patterns completely. 
 -------------------------------------------------------------------*/
-void Pattern::print_solution(glp_prob * master_lp, OrderWidthContainer& ow_set)
+void BBNode::print_solution(glp_prob * master_lp, OrderWidthContainer& ow_set)
 {
 
 	for(int i = 0; i < (int)option->rformats.size(); i++)
@@ -53,14 +53,14 @@ void Pattern::print_solution(glp_prob * master_lp, OrderWidthContainer& ow_set)
 /*-------------------------------------------------------------------
  * Print solution report to 'fout' in text format. 
 -------------------------------------------------------------------*/
-void Pattern::print_text_report(ostream& fout, glp_prob * master_lp, OrderWidthContainer& ow_set)
+void BBNode::print_text_report(ostream& fout, glp_prob * master_lp, OrderWidthContainer& ow_set)
 {
 	double x;
 	fout << endl << " # Solution Report # "<< endl << endl;
 	fout << "Best integer obj. func. value = " << BBNode::get_best_int_obj_val() << endl;
 
-	PatternIterator pat_iter = PatternList.begin();	
-	for(; pat_iter != PatternList.end(); pat_iter++) {
+	PatternIterator pat_iter = pattern_list.begin();	
+	for(; pat_iter != pattern_list.end(); pat_iter++) {
 		
 		x = (*pat_iter)->get_int_sol();
 		if(fabs(x) <= EPSILON)
@@ -83,7 +83,7 @@ void Pattern::print_text_report(ostream& fout, glp_prob * master_lp, OrderWidthC
 /*-------------------------------------------------------------------
  * Print solution report to 'fout' in XML format. 
 -------------------------------------------------------------------*/
-void Pattern::print_xml_report(ostream& fout, glp_prob * master_lp, OrderWidthContainer& ow_set) 
+void BBNode::print_xml_report(ostream& fout, glp_prob * master_lp, OrderWidthContainer& ow_set) 
 {
         double x;
         int patcnt;
@@ -92,8 +92,8 @@ void Pattern::print_xml_report(ostream& fout, glp_prob * master_lp, OrderWidthCo
         fout << "<solution>"<< endl;
         fout << "\t<stockcount>" << BBNode::get_best_int_obj_val() << "</stockcount>" << endl;
 
-        PatternIterator pat_iter = PatternList.begin(); 
-        for(; pat_iter != PatternList.end(); pat_iter++) {
+		PatternIterator pat_iter = pattern_list.begin();	
+		for(; pat_iter != pattern_list.end(); pat_iter++) {
                 
                 //col_index = (*pat_iter)->get_master_col_num();
                 //x = glp_get_col_prim(master_lp, col_index);

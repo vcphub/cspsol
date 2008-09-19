@@ -9,8 +9,6 @@
 #include<vector>
 #include "model.h"
 
-const double SLACK_PENALTY = 10000.0;
-std::vector<int> SlackIndexList;
 const double EPSILON = 0.00001;
 
 using namespace std;
@@ -77,40 +75,6 @@ void add_init_patterns(glp_prob * master_lp, OrderWidthContainer& ow_set)
 }
 
 /*------------------------------------------------------------------------
- * Precondition: Function add_demand_constraints must be called.
- * Description: Initially no pattern variables are present in the master problem
- * therefore slack variables are neeed to satisfy demand constraints.
-------------------------------------------------------------------------*/
-void add_slack_variables(glp_prob * lp, OrderWidthContainer& ow_set)
-{
-	int col_index = glp_get_num_cols(lp) + 1;
-	/* Add slack variable to each demand rows. */
-	glp_add_cols(lp, ow_set.size());
-
-	OrderWidthIterator ow_iter = ow_set.begin();
-	for(; ow_iter != ow_set.end(); ow_iter++) {
-		ostringstream sout;
-		int ind[2];
-		double val[2];
-
-		sout << "Slack" << (*ow_iter)->get_master_row_num();
-		glp_set_col_name(lp, col_index, sout.str().c_str());
-		glp_set_col_bnds(lp, col_index, GLP_LO, 0.0, 0.0);
-		glp_set_obj_coef(lp, col_index, SLACK_PENALTY);
-		
-		ind[1] = (*ow_iter)->get_master_row_num();
-		val[1] = 1.0;
-		glp_set_mat_col(lp, col_index, 1, ind, val);
-
-		SlackIndexList.push_back(col_index);
-		col_index++;
-	}
-	
-	cout << "Total rows, cols = "<<(glp_get_num_rows(lp))<<", "
-		<<(glp_get_num_cols(lp))<<endl;
-}
-
-/*------------------------------------------------------------------------
 Use dual values in the master problem and store them in order objects.
 ------------------------------------------------------------------------*/
 void store_dual_values(glp_prob * lp, OrderWidthContainer& ow_set)
@@ -140,8 +104,8 @@ bool add_pattern(glp_prob * master_lp, Pattern * pattern)
 	
 	assert(pattern != NULL);
 
-	/* Add to global container PatterList. */
-	PatternList.push_back(pattern);
+	/* Add to global container AllPatternList. */
+	AllPatternList.push_back(pattern);
 
 	col_index = glp_get_num_cols(master_lp) + 1;
 	glp_add_cols(master_lp, 1);
@@ -156,6 +120,7 @@ bool add_pattern(glp_prob * master_lp, Pattern * pattern)
 }
 
 /* Utility function. */
+/*
 void print_pattern_var(glp_prob * master_lp)
 {
 	int col_index = 0;
@@ -164,4 +129,4 @@ void print_pattern_var(glp_prob * master_lp)
 		fout << glp_get_col_prim(master_lp, col_index) <<" ";
 	}
 }
-
+*/

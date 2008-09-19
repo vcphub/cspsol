@@ -19,8 +19,8 @@
 using namespace std;
 
 /* Global container to store all pattern objects. */
-vector<Pattern*> PatternList;
 double max_pattern_width;	 
+PatternContainer AllPatternList;
 
 /*------------------------------------------------------------------------
  * Constructor
@@ -119,7 +119,8 @@ Return value:
 	Pointer to best pattern object OR
 	NULL
 ------------------------------------------------------------------------*/
-Pattern * Pattern::get_new_pattern(OrderWidthContainer& ow_set, int iter_count) 
+Pattern * Pattern::get_new_pattern(BBNode * node, OrderWidthContainer& ow_set, 
+				int iter_count) 
 {
 	Pattern * new_pat = NULL;
 
@@ -131,7 +132,7 @@ Pattern * Pattern::get_new_pattern(OrderWidthContainer& ow_set, int iter_count)
 		for(int i = 0; i < (int)solset->size(); i++)
 		{
 			new_pat = (*solset)[i];
-			if(Pattern::check_duplicate(new_pat) == true) {
+			if(node->check_duplicate(new_pat) == true) {
 				delete new_pat; /* delete dupe */
 				new_pat = NULL;
 			} else {
@@ -146,7 +147,7 @@ Pattern * Pattern::get_new_pattern(OrderWidthContainer& ow_set, int iter_count)
 
 		// Solve subproblem MIP using glp_intopt
 		new_pat = Pattern::generate_pattern(ow_set, iter_count, false);
-		if(Pattern::check_duplicate(new_pat) == true) {
+		if(node->check_duplicate(new_pat) == true) {
 
 			//new_pat->print_pattern();
 			/* Check if alternate optimal integer solution exists. */
@@ -155,7 +156,7 @@ Pattern * Pattern::get_new_pattern(OrderWidthContainer& ow_set, int iter_count)
 				new_pat = Pattern::generate_pattern(ow_set, iter_count, true);
 			}
 		}
-		if(Pattern::check_duplicate(new_pat) == true)
+		if(node->check_duplicate(new_pat) == true)
 			new_pat = NULL;
 	}
 
@@ -278,7 +279,6 @@ Description: Check if exactly same pattern already exists in PatterList.
 Return value:
 true = Duplicte pattern exists.
 false = New pattern.
-------------------------------------------------------------------------*/
 bool Pattern::check_duplicate(Pattern * pattern)
 {
 	PatternIterator pat_iter = PatternList.begin();	
@@ -286,9 +286,9 @@ bool Pattern::check_duplicate(Pattern * pattern)
 		if(pattern_compare((*pat_iter), pattern) == true)
 			return true;
 	}
-
 	return false;
 }
+------------------------------------------------------------------------*/
 
 void Pattern::print_pattern()
 {
@@ -303,31 +303,12 @@ Clean up objects in PatterList.
 ------------------------------------------------------------------------*/
 void Pattern::clean_up()
 {
-	PatternIterator pat_iter = PatternList.begin();	
-	for(; pat_iter != PatternList.end(); pat_iter++) {
+	PatternIterator pat_iter = AllPatternList.begin();	
+	for(; pat_iter != AllPatternList.end(); pat_iter++) {
 		delete(*pat_iter);
 		(*pat_iter) = NULL;
 	}
-	PatternList.clear();
-}
-
-/*------------------------------------------------------------------------
- * Precondition: Integer solution exists for master lp.
- * Store integer solution. Pattern variables values are stored in the
- * pattern objects.
-------------------------------------------------------------------------*/
-void Pattern::store_solution(glp_prob * master_lp)
-{
-	PatternIterator pat_iter = PatternList.begin();	
-	for(; pat_iter != PatternList.end(); pat_iter++) {
-
-		int col_index = (*pat_iter)->get_master_col_num();
-		assert(col_index != -1);
-
-		double int_sol = glp_get_col_prim(master_lp, col_index);
-		(*pat_iter)->set_int_sol(int_sol);
-	}
-	lpx_write_cpxlp(master_lp, "best.lp");
+	AllPatternList.clear();
 }
 
 /* Clean up */
