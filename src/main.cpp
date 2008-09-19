@@ -113,8 +113,7 @@ TestCaseSol * solve_csp()
 		cout<<"Node "<<setw(4)<<(solved_node_cnt);
 		cout<<": new patterns = "<<setw(4)<<node->get_pat_cnt()<<" ";
 		
-		if(node->get_lp_status() == REAL_INFEA || 
-				node->get_lp_status() == LOGIC_INFEA)
+		if(node->get_lp_status() == REAL_INFEA)
 			cout << "Infeasible LP. Fathom node. "<<endl;
 
 		else if(node->get_lp_status() == OPT_NONINT) {
