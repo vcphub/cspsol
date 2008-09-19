@@ -7,10 +7,7 @@
 #include "glpk.h"
 
 enum PatternVarStatus {INTEGER, FRACTIONAL};
-class Pattern;	/* Forward class declaration */
-
-typedef std::vector<Pattern*> PatternContainer;
-typedef std::vector<Pattern*>::iterator PatternIterator;
+class BBNode; // forward declaration
 
 /* Each pattern is made of 1 or more different OrderWidths. 
  * A paper roll of width max_pattern_width is cut into a pattern. */
@@ -38,7 +35,8 @@ public:
 	double get_int_sol() { return int_sol; }
 	void set_int_sol(double x) { int_sol = x; }
 
-	static Pattern * get_new_pattern(OrderWidthContainer& ow_set, int iter_count); 
+	static Pattern * get_new_pattern(BBNode * node, OrderWidthContainer& ow_set, 
+					int iter_count); 
 	static Pattern * generate_pattern(OrderWidthContainer& ow_set, int icnt, 
 					bool tol_flag);
 	static void create_subprob(glp_prob * lp, OrderWidthContainer& ow_set,
@@ -46,17 +44,16 @@ public:
 	static bool check_duplicate(Pattern * pattern);
 	void print_pattern();
 
-	static void print_solution(glp_prob* master_lp, OrderWidthContainer& ow_set);
 
-	static void print_xml_report(std::ostream&, glp_prob * master_lp, OrderWidthContainer& ow_set); 
-	static void print_text_report(std::ostream&, glp_prob * master_lp, OrderWidthContainer& ow_set);
-
-	static void store_solution(glp_prob * master_lp);
 	static void clean_up();
 
 	Pattern(void);
 	Pattern(int * ind, double * val);
 	~Pattern(void);
 };
+
+typedef std::vector<Pattern*> PatternContainer;
+typedef std::vector<Pattern*>::iterator PatternIterator;
+bool pattern_compare(Pattern * lhs, Pattern * rhs);
 
 #endif

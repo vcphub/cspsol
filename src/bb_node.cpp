@@ -15,6 +15,7 @@ using namespace std;
 const double Infinity = 100000.0;
 double BBNode::best_int_obj_val = Infinity;
 extern bool workaround_flag;
+BBNode * BestNode = NULL;
 
 /*------------------------------------------------------------------------
 Construct a BBNode object from lp pointer object.
@@ -37,9 +38,12 @@ BBNode::BBNode(long int node_id, BBNode * parent_node)
 	this->lp_status = NOT_SOLVED;
 	/* Deep copy data from parent node */
 	this->master_lp = parent_node->master_lp;
+	this->pattern_list = parent_node->pattern_list;
+
 	this->fix_col_ind_list = parent_node->fix_col_ind_list;
 	this->lb_list = parent_node->lb_list;
 	this->ub_list = parent_node->ub_list;
+
 }
 
 /*------------------------------------------------------------------------
@@ -79,11 +83,12 @@ void BBNode::solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set)
 
 		/* Generate best pattern by solving subproblem. */
 		Pattern * pattern;
-	   	pattern = Pattern::get_new_pattern(ow_set, iter_count);
+	   	pattern = Pattern::get_new_pattern(this, ow_set, iter_count);
 
 		/* Could be NULL, because of new pattern could not be generated. */
 		if(pattern == NULL) break;
 
+		this->pattern_list.push_back(pattern); // new code
 		add_pattern(master_lp, pattern); 
 		pat_cnt++;
 		iter_count++;
@@ -100,8 +105,9 @@ void BBNode::solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set)
 
 		/* Imp: Store integer solution */
 		if(this->opt_obj_val < BBNode::get_best_int_obj_val()) {
+			BestNode = this;
 			BBNode::set_best_int_obj_val(this->opt_obj_val);
-			Pattern::store_solution(master_lp);
+			store_solution(master_lp);
 		}
 
 	} else {
@@ -124,8 +130,8 @@ bool BBNode::int_sol()
 	double dblx, floor_x, ceil_x;
 	bool integer_sol = true;
 
-	PatternIterator pat_iter = PatternList.begin();
-	for(; pat_iter != PatternList.end(); pat_iter++) {
+	PatternIterator pat_iter = pattern_list.begin();
+	for(; pat_iter != pattern_list.end(); pat_iter++) {
 
 		dblx = glp_get_col_prim(master_lp, (*pat_iter)->get_master_col_num());
 		floor_x = floor(dblx);
@@ -158,8 +164,8 @@ void BBNode::branch(BBNodeContainer& bbnode_set)
 	double dblx, ceil_x, floor_x;
 
 	/* Find first fractional variable 'col_ind' to be fixed. */
-	PatternIterator pat_iter = PatternList.begin();
-	for(; pat_iter != PatternList.end(); pat_iter++) {
+	PatternIterator pat_iter = pattern_list.begin();
+	for(; pat_iter != pattern_list.end(); pat_iter++) {
 		if((*pat_iter)->var_status == FRACTIONAL) {
 			col_ind = (*pat_iter)->get_master_col_num();
 			break;
@@ -240,8 +246,8 @@ void BBNode::unfix_all_vars()
 {
 	int col_index;
 
-	PatternIterator pat_iter = PatternList.begin();
-	for(; pat_iter != PatternList.end(); pat_iter++) {
+	PatternIterator pat_iter = pattern_list.begin();
+	for(; pat_iter != pattern_list.end(); pat_iter++) {
 
 		col_index = (*pat_iter)->get_master_col_num();
 		glp_set_col_bnds(master_lp, col_index, GLP_LO, 0.0, 0.0);
@@ -305,6 +311,38 @@ void BBNode::clean_up(BBNodeContainer& bbset)
 		(*iter) = NULL;
 	}
 	bbset.clear();
+}
+
+/*------------------------------------------------------------------------
+------------------------------------------------------------------------*/
+bool BBNode::check_duplicate(Pattern * pattern)
+{
+	PatternIterator pat_iter = pattern_list.begin();	
+	for(; pat_iter != pattern_list.end(); pat_iter++) {
+		if(pattern_compare((*pat_iter), pattern) == true)
+			return true;
+	}
+
+	return false;
+}
+
+/*------------------------------------------------------------------------
+ * Precondition: Integer solution exists for master lp.
+ * Store integer solution. Pattern variables values are stored in the
+ * pattern objects.
+------------------------------------------------------------------------*/
+void BBNode::store_solution(glp_prob * master_lp)
+{
+	PatternIterator pat_iter = pattern_list.begin();	
+	for(; pat_iter != pattern_list.end(); pat_iter++) {
+
+		int col_index = (*pat_iter)->get_master_col_num();
+		assert(col_index != -1);
+
+		double int_sol = glp_get_col_prim(master_lp, col_index);
+		(*pat_iter)->set_int_sol(int_sol);
+	}
+	lpx_write_cpxlp(master_lp, "best.lp");
 }
 
 
