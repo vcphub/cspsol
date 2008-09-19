@@ -7,7 +7,14 @@
 #include "order_width.h"
 #include "glpk.h"
 
-enum NodeStatus {NOT_SOLVED, OPT_NONINT, OPT_INT, REAL_INFEA, LOGIC_INFEA};
+enum NodeStatus {NOT_SOLVED, OPT_NONINT, OPT_INT, REAL_INFEA};
+
+class VariableFix {
+	public:
+		int col_ind; /* column index of variable to be fixed. */
+		double lb; /* Lower bound on the variable. */
+		double ub; /* Upper bound on the variable. */
+};
 
 class BBNode;	/* Forward declaration */
 
@@ -34,9 +41,6 @@ class BBNode
 	DblContainer ub_list;
 	/* Number of new patterns added while solving this node. */
 	int pat_cnt;		
-
-	//std::vector<FixType> fix_type_list;
-	//std::vector<FixVar*> fix_var_list;	
 
 public:
 

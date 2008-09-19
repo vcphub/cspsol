@@ -155,27 +155,6 @@ bool add_pattern(glp_prob * master_lp, Pattern * pattern)
 	return true;
 }
 
-/*------------------------------------------------------------------------
-Check status of slack variables. 
-Return value:
-true = if atleast one slack variable has positive value.
-false = if all slack variables are close to zero.
-------------------------------------------------------------------------*/
-bool nonzero_slack_vars(glp_prob * master_lp)
-{
-	int col_ind;
-	double x;
-
-	for(size_t i = 0; i < SlackIndexList.size(); i++) {
-		col_ind = SlackIndexList[i];
-		x = glp_get_col_prim(master_lp, col_ind);
-		if(x >= EPSILON)
-			return true;
-	}
-
-	return false;
-}
-
 /* Utility function. */
 void print_pattern_var(glp_prob * master_lp)
 {
