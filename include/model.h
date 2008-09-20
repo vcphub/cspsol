@@ -2,12 +2,13 @@
 #define MODEL_H
 
 #include "order_width.h"
+#include "bb_node.h"
 #include "extern.h"
 #include "glpk.h"
 
 void add_demand_constraints(glp_prob * master_lp, OrderWidthContainer& ow_set);
 void add_slack_variables(glp_prob * master_lp, OrderWidthContainer& ow_set);
-void add_init_patterns(glp_prob * master_lp, OrderWidthContainer& ow_set);
+void add_init_patterns(BBNode * node, glp_prob * master_lp, OrderWidthContainer& ow_set);
 
 void store_dual_values(glp_prob * lp, OrderWidthContainer& ow_set);
 bool add_pattern(glp_prob * master_lp, Pattern * pattern);

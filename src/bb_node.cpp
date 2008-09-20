@@ -43,8 +43,36 @@ BBNode::BBNode(long int node_id, BBNode * parent_node)
 	this->fix_col_ind_list = parent_node->fix_col_ind_list;
 	this->lb_list = parent_node->lb_list;
 	this->ub_list = parent_node->ub_list;
-
 }
+
+/*------------------------------------------------------------------------
+Add exiting columns to the master problem.
+------------------------------------------------------------------------*/
+void BBNode::add_exist_patterns()
+{
+	cout << "Adding patterns = " << pattern_list.size() << endl;
+	PatternIterator iter = pattern_list.begin();
+	for(; iter != pattern_list.end(); iter++)
+		add_pattern(master_lp, *iter);
+}
+
+/*------------------------------------------------------------------------
+Remove all patterns in the pattern_list from master problem.
+------------------------------------------------------------------------*/
+void BBNode::remove_patterns()
+{
+	int * num = new int[pattern_list.size() + 1];
+
+	PatternIterator iter = pattern_list.begin();
+	for(int i = 1; iter != pattern_list.end(); iter++, i++)
+		num[i] = (*iter)->get_master_col_num();
+
+	glp_del_cols(master_lp, pattern_list.size(), num);
+
+	delete [] num;
+	cout << "Removed patterns = " << pattern_list.size() << endl;
+}
+	
 
 /*------------------------------------------------------------------------
 Solve node LP associated with this BBNode object.
@@ -54,6 +82,9 @@ void BBNode::solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set)
 {
 
 	fout<<endl<< "["<<(this->node_id)<<"]"<<" Solving BB Node"<<endl<<endl;
+
+	/* Add columns for all patterns. */
+	this->add_exist_patterns();
 
 	/* Unfix all variables. */
 	this->unfix_all_vars();
@@ -69,12 +100,11 @@ void BBNode::solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set)
 
 		/* Solve master problem associated with this BB node. */
 		int lp_status;
+		lpx_std_basis(master_lp);
 	   	lp_status = glp_simplex(master_lp, NULL);
 		assert(lp_status == 0);
 
 		if(glp_get_status(master_lp) != GLP_OPT) break;
-		/* CG only for root node. */
-		if(this->node_id != 1) break;
 
 		fout << "Obj Func Value = " << glp_get_obj_val(master_lp) << endl;
 
@@ -89,6 +119,9 @@ void BBNode::solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set)
 		if(pattern == NULL) break;
 
 		this->pattern_list.push_back(pattern); // new code
+		/* Add to global container AllPatternList. */
+		AllPatternList.push_back(pattern);
+
 		add_pattern(master_lp, pattern); 
 		pat_cnt++;
 		iter_count++;
@@ -119,6 +152,7 @@ void BBNode::solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set)
 		cout<<" Done."<<endl;
 		lpx_write_cpxlp(master_lp, "master-root.lp");
 	}
+
 }
 
 /*------------------------------------------------------------------------
