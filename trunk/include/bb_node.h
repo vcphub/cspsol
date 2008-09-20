@@ -32,7 +32,6 @@ class BBNode
 	/* Pointer to master problem object. */
 	glp_prob * master_lp;
 	NodeStatus lp_status;	/* Status of master_lp after solving it. */
-	PatternContainer pattern_list;
 
 	/* Optimal objective function value of the lp. */
 	double opt_obj_val;	
@@ -46,6 +45,7 @@ class BBNode
 
 public:
 
+	PatternContainer pattern_list;
 	BBNode(glp_prob * lp, long int node_id);
 	BBNode(long int node_id, BBNode * parent_node);
 	~BBNode(void);
@@ -65,6 +65,9 @@ public:
 
 
 	bool check_duplicate(Pattern * pattern);
+
+	void add_exist_patterns();
+	void remove_patterns();
 	void unfix_all_vars();
 	void fix_vars();
 

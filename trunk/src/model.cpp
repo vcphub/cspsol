@@ -48,7 +48,8 @@ void add_demand_constraints(glp_prob * master_lp, OrderWidthContainer& ow_set)
  * Create trivial pattern for each OrderWidth object.
  * Add these patterns to the master problem.
 ------------------------------------------------------------------------*/
-void add_init_patterns(glp_prob * master_lp, OrderWidthContainer& ow_set)
+void add_init_patterns(BBNode * node, glp_prob * master_lp, 
+				OrderWidthContainer& ow_set)
 {
 
 	OrderWidthIterator ow_iter = ow_set.begin();	
@@ -67,11 +68,10 @@ void add_init_patterns(glp_prob * master_lp, OrderWidthContainer& ow_set)
 		pattern->val = val;
 		pattern->nzcnt  = nzcnt;
 
-		add_pattern(master_lp, pattern);
+		node->pattern_list.push_back(pattern);
 	}
-	cout << "Added initial patterns. ";
-	cout << "Total rows, cols = "<<(glp_get_num_rows(master_lp))<<", "
-		<<(glp_get_num_cols(master_lp))<<endl;
+
+	cout << "Added initial patterns =  ";
 }
 
 /*------------------------------------------------------------------------
@@ -103,9 +103,6 @@ bool add_pattern(glp_prob * master_lp, Pattern * pattern)
 	int col_index = 0;
 	
 	assert(pattern != NULL);
-
-	/* Add to global container AllPatternList. */
-	AllPatternList.push_back(pattern);
 
 	col_index = glp_get_num_cols(master_lp) + 1;
 	glp_add_cols(master_lp, 1);

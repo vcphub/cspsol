@@ -85,12 +85,12 @@ TestCaseSol * solve_csp()
 	glp_set_obj_dir(master_lp, GLP_MIN);
 
 	add_demand_constraints(master_lp, ow_set);
-	add_init_patterns(master_lp, ow_set);
 
 	/* Create root BB node. */
 	BBNode::set_best_int_obj_val(Infinity);
 	BBNode * node = new BBNode(master_lp, (long int)1);
 	bbnode_set.push_back(node);
+	add_init_patterns(node, master_lp, ow_set);
 
 	/* While Loop: Branch and bound algorithm. */
 	int solved_node_cnt = 0;
@@ -131,6 +131,8 @@ TestCaseSol * solve_csp()
 
 		} else if(node->get_lp_status() == OPT_INT) 
 			cout << "Obj Func Value = "<< node->get_opt_obj_val() <<" INTEGER ***"<<endl;
+
+		node->remove_patterns();
 	} 
 
 	/* Print solution report. */
