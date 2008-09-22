@@ -4,6 +4,35 @@
 ---------------------------------------------------------------------
 
 ---------------------------------------------------------------------
+Date: Monday, 22 September 2008. Version 0.9 Released.
+
+New features were added in this release.
+
+1. By default, column generation (CG) is now done at every node of 
+Branch & Bound (BB) tree. Main objective behind adding this feature 
+was to avoid generating multiple integer optimal solutions for subproblem, 
+which consumes memory and time resources. 
+
+I got mixed results, we still need to generate multiple solutions 
+to subproblem. More work is needed on this issue.
+
+2. Added new command line option '--cgroot'. If this option is used
+then CG is done only at root node. By default CG is done at every
+node of BB tree.
+
+3. Added new command line option '--bpp', which reads input data file
+in BPP format. Added sample test case specification file 'data/bpcases.txt' 
+
+Actual test cases should be downloaded from:
+http://www.wiwi.uni-jena.de/Entscheidung/binpp/index.htm
+
+4. Testing: Various test benchmarks will be soon published at:
+http://code.google.com/p/cspsol/wiki/Benchmarks09
+
+5. Other changes to make code more readable and consistent with 
+design document.
+
+---------------------------------------------------------------------
 Date: Saturday, 30 August 2008. Version 0.8 Released.
 
 This release addresses issues faced while solving large input.

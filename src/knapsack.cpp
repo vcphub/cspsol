@@ -1,6 +1,7 @@
 
-#include <cassert>
-#include <cmath>
+#include<cassert>
+#include<cmath>
+#include<string> 
 #include "knapsack.h"
 #include "pattern.h"
 #include "extern.h"
