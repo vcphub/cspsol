@@ -8,6 +8,7 @@
 #include<fstream>
 #include<iomanip>
 #include<cstdlib>
+#include<string>
 #include "cmdline.h"
 
 using namespace std;
@@ -28,6 +29,7 @@ CmdOption::CmdOption()
 	subintopt = false;
 	/* Default, CG is done at every node. */
 	cg_root_only = false; 
+	bpp = false;
 
 	silent = false;
 	opt_level = 1.0;
@@ -50,12 +52,15 @@ void print_usage()
 	cout << "All demands, order widths and max_pattern_width must be INTEGERs." << endl;
 	cout << endl;
 
-	cout << "Options:"<<endl;
+	cout << "Options:"<<endl<<endl;
+
 	cout << "--dfs		Process branch and bound tree in depth first manner (default)."<<endl;
 	cout << "--bfs		Process branch and bound tree in breadth first manner."<<endl;
-	cout << "-Olevel		Optimization level (1 to 3). Default value is 1.";
+	cout << "-Olevel		Optimization level (1 to 3). Default value is 1. ";
 	cout << "Higher level may take more time and memory."<<endl;
 
+	cout << "--cgroot	Perform column generation only at root node."<<endl;
+	cout << "--bpp		Read input data file in BPP format."<<endl;
 	cout << "--silent	No output printed to terminal."<<endl;
 
 	cout << "--otext filename"<<endl;	
@@ -111,6 +116,8 @@ CmdOption * process_arguments(int argc, char * argv[])
 			option->search = BFS;
 		else if(parse_cla("--cgroot"))
 			option->cg_root_only = true;
+		else if(parse_cla("--bpp"))
+			option->bpp = true;
 		else if(parse_cla("-O1"))
 			option->opt_level = 1.0;
 		else if(parse_cla("-O2"))

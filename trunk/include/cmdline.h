@@ -26,6 +26,7 @@ class CmdOption
 
 		/* Column generation at root node only. */
 		bool cg_root_only;
+		bool bpp;
 
 		/* No progress output to standard terminal. */
 		bool silent; 
