@@ -26,6 +26,8 @@ CmdOption::CmdOption()
 
 	workaround = false;
 	subintopt = false;
+	/* Default, CG is done at every node. */
+	cg_root_only = false; 
 
 	silent = false;
 	opt_level = 1.0;
@@ -107,6 +109,8 @@ CmdOption * process_arguments(int argc, char * argv[])
 			option->search = DFS;
 		else if(parse_cla("--bfs"))
 			option->search = BFS;
+		else if(parse_cla("--cgroot"))
+			option->cg_root_only = true;
 		else if(parse_cla("-O1"))
 			option->opt_level = 1.0;
 		else if(parse_cla("-O2"))

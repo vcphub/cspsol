@@ -24,6 +24,9 @@ class CmdOption
 		/* Optimization level. Control runtime and memory. */
 		double opt_level;
 
+		/* Column generation at root node only. */
+		bool cg_root_only;
+
 		/* No progress output to standard terminal. */
 		bool silent; 
 		std::ofstream tout; /* Terminal outout redirection. */

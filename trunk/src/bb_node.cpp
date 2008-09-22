@@ -3,6 +3,7 @@
 #include<sstream>
 #include<cmath>
 #include<cassert>
+#include<iomanip>
 
 #include "glpk.h"
 #include "bb_node.h"
@@ -50,7 +51,6 @@ Add exiting columns to the master problem.
 ------------------------------------------------------------------------*/
 void BBNode::add_exist_patterns()
 {
-	cout << "Adding patterns = " << pattern_list.size() << endl;
 	PatternIterator iter = pattern_list.begin();
 	for(; iter != pattern_list.end(); iter++)
 		add_pattern(master_lp, *iter);
@@ -70,7 +70,6 @@ void BBNode::remove_patterns()
 	glp_del_cols(master_lp, pattern_list.size(), num);
 
 	delete [] num;
-	cout << "Removed patterns = " << pattern_list.size() << endl;
 }
 	
 
@@ -80,22 +79,20 @@ LP is solved using column/pattern generation.
 ------------------------------------------------------------------------*/
 void BBNode::solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set)
 {
+	int curr_pat_cnt = pattern_list.size();
 
 	fout<<endl<< "["<<(this->node_id)<<"]"<<" Solving BB Node"<<endl<<endl;
 
-	/* Add columns for all patterns. */
+	/* Add columns to master problem for all patterns. */
 	this->add_exist_patterns();
 
 	/* Unfix all variables. */
 	this->unfix_all_vars();
-	/* Fix variables using node data. */
+	/* Fix variables using node's variable fix data. */
 	this->fix_vars();
 
-	if(this->node_id == 1) 
-		cout<<"Solving root node ..."; cout.flush();
-
 	/* Column generation Loop, while new pattern is found. */
-	int iter_count = 1, pat_cnt = 0;
+	int iter_count = 1, new_pat_cnt = 0;
 	while (true) {
 
 		/* Solve master problem associated with this BB node. */
@@ -107,6 +104,7 @@ void BBNode::solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set)
 		if(glp_get_status(master_lp) != GLP_OPT) break;
 
 		fout << "Obj Func Value = " << glp_get_obj_val(master_lp) << endl;
+		if((this->node_id != 1) && (option->cg_root_only)) break;
 
 		/* Store dual values in OrderWidth objects. */
 		store_dual_values(master_lp, ow_set);
@@ -123,12 +121,11 @@ void BBNode::solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set)
 		AllPatternList.push_back(pattern);
 
 		add_pattern(master_lp, pattern); 
-		pat_cnt++;
+		new_pat_cnt++;
 		iter_count++;
 		cout<<"."; cout.flush();
 	} 
 
-	this->pat_cnt = pat_cnt;
 	if(glp_get_status(master_lp) != GLP_OPT)
 		this->lp_status = REAL_INFEA;
 
@@ -149,10 +146,12 @@ void BBNode::solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set)
 	}
 
 	if(this->node_id == 1) {
-		cout<<" Done."<<endl;
 		lpx_write_cpxlp(master_lp, "master-root.lp");
 	}
 
+	cout<<endl;
+	cout<<"Patterns: Current = "<<setw(3)<<curr_pat_cnt;
+	cout<<", New = "<<setw(3)<<new_pat_cnt<<", ";
 }
 
 /*------------------------------------------------------------------------

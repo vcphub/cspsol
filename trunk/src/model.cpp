@@ -71,7 +71,7 @@ void add_init_patterns(BBNode * node, glp_prob * master_lp,
 		node->pattern_list.push_back(pattern);
 	}
 
-	cout << "Added initial patterns =  ";
+	cout<<"Added initial patterns =  "<<ow_set.size()<<endl;
 }
 
 /*------------------------------------------------------------------------
