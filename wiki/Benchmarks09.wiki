@@ -5,6 +5,88 @@
 
 Following are results of test runs done for cspsol version 0.9.
 
-== Machine Specification ==
+== Computer Specification ==
 
-== Benchmarks ==
+Test were made on computer with following specification.
+
+Desktop Computer Dell Vostro 400, 32 bits
+
+Processor: Intel(R) Core(TM)2 Quad CPU    Q6600  @ 2.40GHz
+
+RAM: 2 GB
+
+== CSP Benchmarks ==
+
+{{{
+
+vijay@vijay-hq:~/projects/cspsol/data$ cspsol --test allcases.txt 
+
+Solving testcase no. 1... Done. 
+Testcase #1:  Expected =    2, Actual =    2, Runtime =    0 Secs. PASS.
+
+Solving testcase no. 2... Done. 
+Testcase #2:  Expected =   32, Actual =   32, Runtime =    0 Secs. PASS.
+
+Solving testcase no. 3... Done. 
+Testcase #3:  Expected =   16, Actual =   16, Runtime =    0 Secs. PASS.
+
+Solving testcase no. 4... Done. 
+Testcase #4:  Expected =   18, Actual =   18, Runtime =    0 Secs. PASS.
+
+Solving testcase no. 5... Done. 
+Testcase #5:  Expected =    9, Actual =    9, Runtime =    0 Secs. PASS.
+
+Solving testcase no. 6... Done. 
+Testcase #6:  Expected =    5, Actual =    6, Runtime =    0 Secs. FAIL.
+
+Finished all test cases in 0 Secs.
+
+
+vijay@vijay-hq:~/projects/cspsol/data$ cspsol -O2 --test allcases.txt 
+Solving testcase no. 1... Done. 
+Testcase #1:  Expected =    2, Actual =    2, Runtime =    0 Secs. PASS.
+
+Solving testcase no. 2... Done. 
+Testcase #2:  Expected =   32, Actual =   32, Runtime =    0 Secs. PASS.
+
+Solving testcase no. 3... Done. 
+Testcase #3:  Expected =   16, Actual =   16, Runtime =    0 Secs. PASS.
+
+Solving testcase no. 4... Done. 
+Testcase #4:  Expected =   18, Actual =   18, Runtime =    0 Secs. PASS.
+
+Solving testcase no. 5... Done. 
+Testcase #5:  Expected =    9, Actual =    9, Runtime =    0 Secs. PASS.
+
+Solving testcase no. 6... Done. 
+Testcase #6:  Expected =    5, Actual =    6, Runtime =    1 Secs. FAIL.
+
+Finished all test cases in 1 Secs.
+
+
+vijay@vijay-hq:~/projects/cspsol/data$ cspsol -O3 --test allcases.txt 
+Solving testcase no. 1... Done. 
+Testcase #1:  Expected =    2, Actual =    2, Runtime =    0 Secs. PASS.
+
+Solving testcase no. 2... Done. 
+Testcase #2:  Expected =   32, Actual =   32, Runtime =    0 Secs. PASS.
+
+Solving testcase no. 3... Done. 
+Testcase #3:  Expected =   16, Actual =   16, Runtime =    0 Secs. PASS.
+
+Solving testcase no. 4... Done. 
+Testcase #4:  Expected =   18, Actual =   18, Runtime =    0 Secs. PASS.
+
+Solving testcase no. 5... Done. 
+Testcase #5:  Expected =    9, Actual =    9, Runtime =    1 Secs. PASS.
+
+Solving testcase no. 6... Done. 
+Testcase #6:  Expected =    5, Actual =    5, Runtime =    1 Secs. PASS.
+
+Finished all test cases in 2 Secs.
+
+}}}
+
+== BPP Benchmarks ==
+
+TODO
