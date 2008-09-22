@@ -93,7 +93,7 @@ TestCaseSol * solve_csp()
 	add_init_patterns(node, master_lp, ow_set);
 
 	/* While Loop: Branch and bound algorithm. */
-	int solved_node_cnt = 0;
+	int solved_node_cnt = 1;
 	while(bbnode_set.empty() == false) {
 
 		/* Select next node from the tree. */
@@ -106,12 +106,12 @@ TestCaseSol * solve_csp()
 			bbnode_set.pop_back();
 		}
 
+		cout<<"Node "<<setw(4)<<(solved_node_cnt)<<": ";
 		/* Solve node LP using column generation. */
 		node->solve(ow_set, bbnode_set);
 		solved_node_cnt++;
 
-		cout<<"Node "<<setw(4)<<(solved_node_cnt);
-		cout<<": new patterns = "<<setw(4)<<node->get_pat_cnt()<<" ";
+		//cout<<": new patterns = "<<setw(4)<<node->get_pat_cnt()<<" ";
 		
 		if(node->get_lp_status() == REAL_INFEA)
 			cout << "Infeasible LP. Fathom node. "<<endl;
