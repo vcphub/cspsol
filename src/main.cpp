@@ -73,7 +73,11 @@ TestCaseSol * solve_csp()
 	time_t start_time, end_time;
 	time(&start_time);
 
-	OrderWidth::read_order_data(ow_set, option->data_file);
+	if(option->bpp == true)
+		OrderWidth::read_item_data(ow_set, option->data_file);
+	else
+		OrderWidth::read_order_data(ow_set, option->data_file);
+
 	OrderWidth::print_order_list(ow_set);
 
 	/* Create master lp using GLPK API. */

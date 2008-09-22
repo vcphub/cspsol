@@ -44,6 +44,56 @@ OrderWidth::OrderWidth(double width, int demand)
 }
 
 /*------------------------------------------------------------------------
+Description: Read item data from file and populate container object. 
+Although input data is for Bin Packing Problem (BPP). It is converted
+into CSP using following equivalence:
+items = orders
+item weight = order width
+bin capacity = max pattern width
+
+Input File Format:
+First line = Number of items.
+Second line = bin capacity. 
+Remaining lines = Weights of all items.
+------------------------------------------------------------------------*/
+void OrderWidth::read_item_data(OrderWidthContainer& ow_set, std::string filename)
+{
+	ifstream fin;
+	double width;
+ 	int demand = 1, count = 0;
+
+	if(filename == "stdin") {
+		cin >> count;
+		cin >> max_pattern_width;
+
+		for(int i = 0; i < count; i++)
+		{
+			cin >> width; 
+			OrderWidth * order = new OrderWidth(width, demand);
+			ow_set.push_back(order);
+		}	
+	} else {
+		fin.open(filename.c_str());
+		assert(fin.is_open());
+		cout << "Reading item data from file " << filename << endl;
+
+		fin >> count;
+		fin >> max_pattern_width;
+
+		for(int i = 0; i < count; i++)
+		{
+			fin >> width; 
+			OrderWidth * order = new OrderWidth(width, demand);
+			ow_set.push_back(order);
+		}	
+	}
+
+	cout<<"Total items read from file = "<<(ow_set.size())<<endl;
+	fin.close();
+}
+
+
+/*------------------------------------------------------------------------
 Description: Read order data from file and populate container object. 
 Assumed Format:
 First line of the input file must specify maximum length of roll. 
@@ -67,7 +117,7 @@ void OrderWidth::read_order_data(OrderWidthContainer& ow_set, std::string filena
 
 	} else {
 		fin.open(filename.c_str());
-		assert(fin != NULL);
+		assert(fin.is_open());
 		cout << "Reading order data from file " << filename << endl;
 		fin >> max_pattern_width;
 		fin >> width >> demand;		

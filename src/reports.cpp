@@ -5,6 +5,7 @@
 #include<iostream>
 #include<iomanip>
 #include<ostream>
+#include<string>
 #include<cmath>
 
 #include "pattern.h"
