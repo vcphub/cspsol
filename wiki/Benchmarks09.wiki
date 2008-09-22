@@ -1,10 +1,10 @@
 #summary Test runs for version 0.9
 #labels Phase-QA
 
-= Introduction =
+== Introduction ==
 
 Following are results of test runs done for cspsol version 0.9.
 
-= Machine Specification =
+== Machine Specification ==
 
-= Benchmarks =
+== Benchmarks ==
