@@ -92,21 +92,21 @@ TestCaseSol * solve_csp()
 
 	/* Create root BB node. */
 	BBNode::set_best_int_obj_val(Infinity);
-	BBNode * node = new BBNode(master_lp, (long int)1);
-	bbnode_set.push_back(node);
-	add_init_patterns(node, master_lp, ow_set);
+	BBNode * root_node = new BBNode(master_lp, (long int)1);
+	bbnode_set.push_back(root_node);
+	add_init_patterns(root_node, master_lp, ow_set);
 
 	/* While Loop: Branch and bound algorithm. */
 	int solved_node_cnt = 1;
 	while(bbnode_set.empty() == false) {
 
 		/* Select next node from the tree. */
-		BBNode * node;
+		BBNode * node = NULL;
 		if(option->search == BFS) {
-	       	node = bbnode_set.front();
+                        node = bbnode_set.front();
 			bbnode_set.pop_front();
 		} else if(option->search == DFS) {
-	       	node = bbnode_set.back();
+                        node = bbnode_set.back();
 			bbnode_set.pop_back();
 		}
 
@@ -137,6 +137,8 @@ TestCaseSol * solve_csp()
 			cout << "Obj Func Value = "<< node->get_opt_obj_val() <<" INTEGER ***"<<endl;
 
 		node->remove_patterns();
+                // ilpanda : This node in BB tree is no more needed.
+                delete(node);
 	} 
 
 	/* Print solution report. */
