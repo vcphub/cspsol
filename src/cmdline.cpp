@@ -7,8 +7,9 @@
 #include<iostream>
 #include<fstream>
 #include<iomanip>
-#include<cstdlib>
 #include<string>
+#include<cstdlib>
+#include<cstring>
 #include "cmdline.h"
 
 using namespace std;

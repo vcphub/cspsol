@@ -10,6 +10,7 @@
 #include<string>
 #include<vector>
 #include<cassert>
+#include<cstdlib>
 
 #include "order_width.h"
 #include "extern.h"

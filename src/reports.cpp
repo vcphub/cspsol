@@ -7,6 +7,7 @@
 #include<ostream>
 #include<string>
 #include<cmath>
+#include<cstring>
 
 #include "pattern.h"
 #include "cmdline.h"
