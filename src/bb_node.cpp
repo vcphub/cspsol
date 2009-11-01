@@ -135,7 +135,11 @@ void BBNode::solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set)
 
 		/* Imp: Store integer solution */
 		if(this->opt_obj_val < BBNode::get_best_int_obj_val()) {
-			BestNode = this;
+                        // ilpanda : Copy object to BestNode.
+                        if(BestNode != NULL)
+                                delete(BestNode);
+	                BestNode = new BBNode(this->node_id, this);
+
 			BBNode::set_best_int_obj_val(this->opt_obj_val);
 			store_solution(master_lp);
 		}

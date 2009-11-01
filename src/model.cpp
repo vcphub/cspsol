@@ -8,6 +8,7 @@
 #include<cmath>
 #include<vector>
 #include "model.h"
+#include "extern.h"
 
 const double EPSILON = 0.00001;
 
@@ -69,6 +70,8 @@ void add_init_patterns(BBNode * node, glp_prob * master_lp,
 		pattern->nzcnt  = nzcnt;
 
 		node->pattern_list.push_back(pattern);
+		/* Add to global container AllPatternList. */
+		AllPatternList.push_back(pattern);
 	}
 
 	cout<<"Added initial patterns =  "<<ow_set.size()<<endl;
