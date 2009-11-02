@@ -219,6 +219,10 @@ void KnapSolSet::add_solution(KnapSol * sol)
 {
 	if(this->solution_exists(sol) == false)
 		solutions.push_back(sol);
+        else {
+                // KnapSol object not needed, so delete it.
+                delete(sol); 
+        }
 }
 
 /*--------------------------------------------------------------------
