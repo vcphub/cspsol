@@ -102,7 +102,7 @@ void BBNode::print_xml_report(ostream& fout, glp_prob * master_lp, OrderWidthCon
                 x = (*pat_iter)->get_int_sol();
                 if(abs(x) <= EPSILON)
                         continue;
-                for (patcnt=0;patcnt<x;patcnt++) {
+                for (patcnt = 0; patcnt < lround(x); patcnt++) {
                         fout<< "\t<pattern>"<<endl;
 
                         for(int i = 1; i <= (*pat_iter)->nzcnt; i++) {
