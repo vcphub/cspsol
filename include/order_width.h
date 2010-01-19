@@ -10,16 +10,19 @@ class OrderWidth;	/* Forward declaration. */
 typedef std::vector<OrderWidth*> OrderWidthContainer;
 typedef std::vector<OrderWidth*>::iterator OrderWidthIterator;
 
+/* 
+ * Order from customer. number of items = demand, item width = width.
+ * */ 
 class OrderWidth
 {
 	/* In meters. Each pattern is made of 1 or more different OrderWidths. */
-	double width;				
-	int demand;			/* Quantity ordered */	
-	int id;
+	double width;           /* Width in units of length. */
+	int demand;		/* Quantity ordered. */	
+	int id;                 /* Unique identifier for each object.*/
 	static int count;	/* Keep track of total number of objects. */
 
-	/* Master Model */
-	/* Demand constraint in master problem */		
+	/* Master problem/model */
+        /* Row index of associated demand constraint. */
 	int master_row_num;	
 	double dual_value;	/* Row dual value */
 
@@ -59,6 +62,5 @@ public:
 	static void clean_up(OrderWidthContainer& ow_set);
 	~OrderWidth(void);
 };
-
 
 #endif

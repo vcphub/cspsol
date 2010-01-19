@@ -17,6 +17,7 @@
 
 using namespace std;
 
+// Initialize static property.
 int OrderWidth::count = 0;
 
 /*------------------------------------------------------------------------
@@ -45,14 +46,15 @@ OrderWidth::OrderWidth(double width, int demand)
 }
 
 /*------------------------------------------------------------------------
-Description: Read item data from file and populate container object. 
+# Static function.
+# Description: Read item data from file and populate container object. 
 Although input data is for Bin Packing Problem (BPP). It is converted
 into CSP using following equivalence:
 items = orders
 item weight = order width
 bin capacity = max pattern width
 
-Input File Format:
+# Input File Format:
 First line = Number of items.
 Second line = bin capacity. 
 Remaining lines = Weights of all items.
@@ -95,8 +97,9 @@ void OrderWidth::read_item_data(OrderWidthContainer& ow_set, std::string filenam
 
 
 /*------------------------------------------------------------------------
-Description: Read order data from file and populate container object. 
-Assumed Format:
+# Static function.
+# Description: Read order data from file and populate container object. 
+# Assumed Format:
 First line of the input file must specify maximum length of roll. 
 order_width demand_quantity
 ------------------------------------------------------------------------*/
@@ -111,6 +114,7 @@ void OrderWidth::read_order_data(OrderWidthContainer& ow_set, std::string filena
 		cin >> width >> demand;		
 		while(cin.eof() == 0)
 		{
+                        // Create new object and add it to order width set.
 			OrderWidth * order = new OrderWidth(width, demand);
 			ow_set.push_back(order);
 			cin >> width >> demand;	 /* read next line */
@@ -124,6 +128,7 @@ void OrderWidth::read_order_data(OrderWidthContainer& ow_set, std::string filena
 		fin >> width >> demand;		
 		while(fin.eof() == 0)
 		{
+                        // Create new object and add it to order width set.
 			OrderWidth * order = new OrderWidth(width, demand);
 			ow_set.push_back(order);
 			fin >> width >> demand;	 /* read next line */
