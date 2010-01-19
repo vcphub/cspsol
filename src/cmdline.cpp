@@ -13,25 +13,34 @@
 #include "cmdline.h"
 
 using namespace std;
+// Macro
 #define parse_cla(str) (strcmp(argv[i], str) == 0)
 
 /*-------------------------------------------------------------------
 Constructor. 
+Initialize properties to default values.
 -------------------------------------------------------------------*/
 CmdOption::CmdOption()
 {
-	/* Set default values. */
+        /* BB tree can be processed by DFS or BFS. Default = DFS. */
 	search = DFS;
 	data_file = NULL;
-	test = false; 	/* no testing. */
+
+        /* batch testing mode is off. */
+	test = false;           
 	tc_file = NULL;
 
-	workaround = false;
-	subintopt = false;
-	/* Default, CG is done at every node. */
-	cg_root_only = false; 
+        /* input data is CSP format. */
 	bpp = false;
 
+        /* Solve subproblem by dynamic programming (DP). */
+	subintopt = false;      
+	workaround = false;
+
+	/* CG is done at every BB node, including root node. */
+	cg_root_only = false;    
+
+        /* Progress is displayed on standard output. */
 	silent = false;
 	opt_level = 1.0;
 }
@@ -39,7 +48,7 @@ CmdOption::CmdOption()
 /*-------------------------------------------------------------------
 Print program usage.
 -------------------------------------------------------------------*/
-void print_usage() 
+void CmdOption::print_usage() 
 {
 	cout << endl;
 	cout << "Usage: cspsol [options...]" << " --data filename" << endl << endl;
@@ -53,24 +62,26 @@ void print_usage()
 	cout << "All demands, order widths and max_pattern_width must be INTEGERs." << endl;
 	cout << endl;
 
-	cout << "Options:"<<endl<<endl;
+	cout << "Options :"<<endl<<endl;
 
+	cout << "--test filename"<<endl;
+        cout << "                Solve all test cases input data file ."<<endl;
 	cout << "--dfs		Process branch and bound tree in depth first manner (default)."<<endl;
 	cout << "--bfs		Process branch and bound tree in breadth first manner."<<endl;
 	cout << "-Olevel		Optimization level (1 to 3). Default value is 1. ";
 	cout << "Higher level may take more time and memory."<<endl;
 
 	cout << "--cgroot	Perform column generation only at root node."<<endl;
-	cout << "--bpp		Read input data file in BPP format."<<endl;
+	cout << "--bpp		Assume input data file in bin packing problem (BPP) format."<<endl;
 	cout << "--silent	No output printed to terminal."<<endl;
 
 	cout << "--otext filename"<<endl;	
-	cout << "		Write solution to filename in text format."<<endl;
+	cout << "		Write solution to specified file in text format."<<endl;
 	cout << "		If the filename is 'stdout' then solution is printed \
 to output terminal."<<endl<<endl;
 
 	cout << "--oxml filename"<<endl;	
-	cout << "		Write solution to filename in XML format."<<endl;
+	cout << "		Write solution to specified file in XML format."<<endl;
 	cout << "		If the filename is 'stdout' then solution is printed \
 to output terminal."<<endl<<endl;
 
@@ -89,14 +100,13 @@ to output terminal."<<endl<<endl;
 /*-------------------------------------------------------------------
 Process command line options.
 -------------------------------------------------------------------*/
-CmdOption * process_arguments(int argc, char * argv[])
+void CmdOption::process_arguments(int argc, char * argv[])
 {
-	CmdOption * option = new CmdOption();
-
-	/* Parse the argument */
+	/* Parse and process the arguments. */
 	if(argc == 1)
 		print_usage();
-	int i;
+
+	int i = 0;
 	for(i = 1; i < argc; i++) {
 
 		if(parse_cla("--help") || parse_cla("-h"))
@@ -108,33 +118,33 @@ CmdOption * process_arguments(int argc, char * argv[])
 				cerr << "cspsol error: Testcases file NOT specified." << endl;
 				print_usage();
 			}    
-			option->tc_file = argv[i];
-			option->test = true;
+			this->tc_file = argv[i];
+			this->test = true;
 
 		} else if(parse_cla("--dfs"))
-			option->search = DFS;
+			this->search = DFS;
 		else if(parse_cla("--bfs"))
-			option->search = BFS;
+			this->search = BFS;
 		else if(parse_cla("--cgroot"))
-			option->cg_root_only = true;
+			this->cg_root_only = true;
 		else if(parse_cla("--bpp"))
-			option->bpp = true;
+			this->bpp = true;
 		else if(parse_cla("-O1"))
-			option->opt_level = 1.0;
+			this->opt_level = 1.0;
 		else if(parse_cla("-O2"))
-			option->opt_level = 2.0;
+			this->opt_level = 2.0;
 		else if(parse_cla("-O3"))
-			option->opt_level = 3.0;
+			this->opt_level = 3.0;
 		else if(parse_cla("--silent"))
-			option->silent = true;
+			this->silent = true;
 		else if(parse_cla("--wa")) {
 			cout<<endl;
 			cout<<"IMP: Must use patched GLPK lib to allow -ve tol_obj."<<endl;
 			cout<<endl;
-			option->workaround = true;
+			this->workaround = true;
 
 		} else if(parse_cla("--subintopt") || parse_cla("--si")) {
-			option->subintopt = true;
+			this->subintopt = true;
 
 		} else if (parse_cla("-d") || parse_cla("--data")) {
 			i++; 
@@ -142,7 +152,7 @@ CmdOption * process_arguments(int argc, char * argv[])
 				cerr << "cspsol error: Orders data file NOT specified." << endl;
 				print_usage();
 			}    
-			option->data_file = argv[i];
+			this->data_file = argv[i];
 
 		} else if (parse_cla("--oxml")) {
 			i++; 
@@ -150,8 +160,8 @@ CmdOption * process_arguments(int argc, char * argv[])
 				cerr << "cspsol error: Output solution report file NOT specified." << endl;
 				print_usage();
 			}    
-			option->rformats.push_back(XML);
-			option->rfilenames.push_back(argv[i]);
+			this->rformats.push_back(XML);
+			this->rfilenames.push_back(argv[i]);
 
 		} else if (parse_cla("--otext")) {
 			i++; 
@@ -159,24 +169,21 @@ CmdOption * process_arguments(int argc, char * argv[])
 				cerr << "cspsol error: Output solution report file NOT specified." << endl;
 				print_usage();
 			}    
-			option->rformats.push_back(TEXT);
-			option->rfilenames.push_back(argv[i]);
+			this->rformats.push_back(TEXT);
+			this->rfilenames.push_back(argv[i]);
 		} 
-
 	}
 
-	if((i == argc) && (option->data_file == NULL) && 
-					(option->tc_file == NULL)) {
+	if((i == argc) && (this->data_file == NULL) && 
+					(this->tc_file == NULL)) {
 		cerr << "cspsol error: Orders data file NOT specified." << endl;
 		print_usage();
 	}
 
-	if(option->silent == true) {
+	if(this->silent == true) {
 		/* Redirect terminal output to file cout.txt opened using tout.*/
-		option->redirect_cout();
+		this->redirect_cout();
 	}
-
-	return option;
 }
 
 /* Redirect terminal output to file cout.txt opened using tout.*/
