@@ -7,9 +7,13 @@
 enum SearchStrategy {DFS, BFS};
 enum ReportFormat {TEXT, XML};
 
+/*
+ * Command line options.
+ * */
 class CmdOption
 {
 	public:
+                /* BB tree search. */
 		SearchStrategy search; 
 
 		/* Input data file name */
@@ -26,11 +30,12 @@ class CmdOption
 
 		/* Column generation at root node only. */
 		bool cg_root_only;
+                /* Solve bin packing problem (bpp) */
 		bool bpp;
 
 		/* No progress output to standard terminal. */
 		bool silent; 
-		std::ofstream tout; /* Terminal outout redirection. */
+		std::ofstream tout; /* Terminal output redirection. */
 		std::streambuf * cout_buf;
 
 		/* Solution report formats. */
@@ -43,13 +48,11 @@ class CmdOption
 
 		/* Set default values in constructor. */
 		CmdOption();
+                void process_arguments(int argc, char * argv[]);
+                void print_usage();
 		void redirect_cout();
 		void restore_cout();
 
 };
-
-/* Global functions. */
-CmdOption * process_arguments(int argc, char * argv[]);
-void print_usage();
 
 #endif

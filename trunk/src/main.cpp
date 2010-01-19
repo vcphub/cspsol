@@ -44,7 +44,8 @@ void run_testcases();
 int main(int argc, char * argv[])
 {		
 	/* Command line arguments. */
-	option = process_arguments(argc, argv);
+	option = new CmdOption();
+	option->process_arguments(argc, argv);
 
 	if(option->test == false)
 		solve_csp();
