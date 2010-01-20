@@ -77,7 +77,7 @@ void BBNode::remove_patterns()
 Solve node LP associated with this BBNode object.
 LP is solved using column/pattern generation.
 ------------------------------------------------------------------------*/
-void BBNode::solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set)
+void BBNode::solve(OrderWidthContainer& ow_set)
 {
 	int curr_pat_cnt = pattern_list.size();
 
@@ -135,7 +135,7 @@ void BBNode::solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set)
 
 		/* Imp: Store integer solution */
 		if(this->opt_obj_val < BBNode::get_best_int_obj_val()) {
-                        // ilpanda : Copy object to BestNode.
+                        // Copy object to BestNode.
                         if(BestNode != NULL)
                                 delete(BestNode);
 	                BestNode = new BBNode(this->node_id, this);
