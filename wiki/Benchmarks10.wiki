@@ -1,0 +1,20 @@
+#summary Test runs for version 1.0
+
+_Note: Hit Refresh button of your browser to get latest version of this page._
+
+=== Introduction ===
+
+Following are results of test runs done for cspsol version 1.0.
+
+=== Computer Specification ===
+
+Test were made on computer with following specification.
+
+Desktop Computer Dell Vostro 400, 32 bits
+
+Processor: Intel(R) Core(TM)2 Quad CPU    Q6600  @ 2.40GHz
+
+RAM: 2 GB
+
+
+=TODO=
