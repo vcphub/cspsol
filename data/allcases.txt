@@ -1,7 +1,8 @@
-6
+7
 case1.txt 2
 case2.txt 32
 case3.txt 16
 case4.txt 18
 case5.txt 9
 case6.txt 5
+case7.txt 19
