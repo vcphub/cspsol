@@ -113,7 +113,7 @@ TestCaseSol * solve_csp()
 
 		cout<<"Node "<<setw(4)<<(solved_node_cnt)<<": ";
 		/* Solve node LP using column generation. */
-		node->solve(ow_set, bbnode_set);
+		node->solve(ow_set);
 		solved_node_cnt++;
 
 		//cout<<": new patterns = "<<setw(4)<<node->get_pat_cnt()<<" ";
@@ -138,7 +138,7 @@ TestCaseSol * solve_csp()
 			cout << "Obj Func Value = "<< node->get_opt_obj_val() <<" INTEGER ***"<<endl;
 
 		node->remove_patterns();
-                // ilpanda : This node in BB tree is no more needed.
+                // This node in BB tree is no more needed.
                 delete(node);
 	} 
 

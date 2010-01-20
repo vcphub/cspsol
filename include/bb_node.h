@@ -59,7 +59,7 @@ public:
 
 	void add_var_fix(int col_ind, double lb, double ub);
 	int find_var_fix(int col_ind);
-	void solve(OrderWidthContainer& ow_set, BBNodeContainer& bbnode_set);
+	void solve(OrderWidthContainer& ow_set);
 	bool int_sol();
 	void branch(BBNodeContainer& bbnode_set);
 

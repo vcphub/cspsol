@@ -4,6 +4,18 @@
 ---------------------------------------------------------------------
 
 ---------------------------------------------------------------------
+Date: Wednesday, 20 January 2010. Version 1.0 Released.
+
+This release consists of major bug fixes and other improvements.
+
+1. Fixed major memory leak bug in DP algorithm. Thanks to Jonathan Mitchell
+for reporting the problem and Francesco (ilpanda) for helping in 
+identifying the cause & testing.
+
+2. Design document was updated and improved. While creating the document, 
+code was reviewed, refactored and comments were added.
+
+---------------------------------------------------------------------
 Date: Monday, 22 September 2008. Version 0.9 Released.
 
 New features were added in this release.
