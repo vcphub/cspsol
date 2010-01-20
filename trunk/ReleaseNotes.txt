@@ -12,7 +12,14 @@ This release consists of major bug fixes and other improvements.
 for reporting the problem and Francesco (ilpanda) for helping in 
 identifying the cause & testing.
 
-2. Design document was updated and improved. While creating the document, 
+2. Unnecessary BB nodes are not deleted, reducing memory usage. Thanks to 
+Francesco for suggestion.
+
+3. Update CSP and BPP test case specs file. Added BPP instances.
+
+4. Added copy of GNU GPL version 3 license.
+
+5. Design document was updated and improved. While creating the document, 
 code was reviewed, refactored and comments were added.
 
 ---------------------------------------------------------------------
