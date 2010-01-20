@@ -228,6 +228,9 @@ Finished all test cases in 1892 Secs.
 
 }}}
 
+Bin Packing Problem test cases were taken from :
+http://www.wiwi.uni-jena.de/Entscheidung/binpp/bin1dat.htm
+
 === Summary ===
 
 From above tests, it can be concluded that column generation at every node of BB tree, improves the accuracy of solution produced by cspsol. Depending on the availability of RAM on you machine, you can choose optimization flags -O1 (lowest memory required) to -O3 (highest memory required). Flag -O3 requires highest memory because large number of optimal solutions to subproblem are stored in the memory.
