@@ -1,0 +1,55 @@
+Compiling and Installing program cspsol.
+-----------------------------------------------
+
+Package Dependancies
+---------------------------------
+
+1. Program cspsol depends on GLPK library. Before compiling, please install 
+glpk-4.x. For glpk details see GLPK webpage <http://www.gnu.org/software/glpk/glpk.html>.
+
+
+Unpacking the distribution file
+---------------------------------
+The cspsol package is distributed in the form of a packed archive. 
+It is one file named `cspsol-X.Y.tar.gz', where `X' is the major version 
+number and `Y' is the minor version number.
+
+In order to prepare the distribution for installation you should:
+
+1. Copy the cspsol distribution file to a working directory.
+
+2. Unpack the distribution file with the following command:
+
+        gzip -xvzf cspsol-X.Y.tar.gz
+
+   It automatically creates the subdirectory `cspsol-X.Y' containing the 
+   cspsol distribution.
+
+
+Compiling/Building Executable
+-------------------------------- 
+1. Go to directory 'cspsol-X.Y/src'. Type make or make cspsol. This should 
+compile and build executable 'cspsol'.
+
+        make cspsol
+
+2. Copy/install the executable file 'cspsol' to suitable directory.
+
+
+Basic Usage
+-------------------------------
+
+Usage: cspsol [options...] --data filename
+
+Where filename contains orders data in following format.
+max_pattern_width
+order_width_1 demand_1
+order_width_2 demand_2
+order_width_n demand_n
+
+All order widths must be <= max_pattern_width.
+All demands, order widths and max_pattern_width must be INTEGERs.
+
+For help type and detail usage information type :
+        cspsol -h
+
