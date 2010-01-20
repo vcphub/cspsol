@@ -15,6 +15,7 @@
 using namespace std;
 // Macro
 #define parse_cla(str) (strcmp(argv[i], str) == 0)
+#define VERSION_NUMBER "1.0"
 
 /*-------------------------------------------------------------------
 Constructor. 
@@ -92,8 +93,25 @@ to output terminal."<<endl<<endl;
 	cout << "		To be used with --si. Needs changes/patch to GLPK lib."<<endl;
 
 	cout << "-h, --help	Display this help information and exit."<<endl;
+	cout << "-v, --version   Display version information and exit."<<endl;
+
 	cout << endl;
 
+	exit(-1);
+}
+
+/*-------------------------------------------------------------------
+Print program usage.
+-------------------------------------------------------------------*/
+void CmdOption::print_version() 
+{
+        cout<<"cspsol: Cutting Stock Problem Solver, version "<< VERSION_NUMBER <<endl<<endl;
+
+        cout<<"Copyright (C) 2008, 2009, 2010 Vijay C. Patil."<<endl<<endl;
+        cout<<"This program is free software; you may redistribute it under the terms of "<<endl;
+        cout<<"the GNU General Public License, version 3, This program has absolutely no warranty."<<endl;
+
+	cout << endl;
 	exit(-1);
 }
 
@@ -111,6 +129,8 @@ void CmdOption::process_arguments(int argc, char * argv[])
 
 		if(parse_cla("--help") || parse_cla("-h"))
 			print_usage();
+		else if(parse_cla("--version") || parse_cla("-v"))
+			print_version();
 
 		else if(parse_cla("--test")) {
 			i++; 

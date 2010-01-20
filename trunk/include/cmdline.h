@@ -50,6 +50,7 @@ class CmdOption
 		CmdOption();
                 void process_arguments(int argc, char * argv[]);
                 void print_usage();
+                void print_version();
 		void redirect_cout();
 		void restore_cout();
 
