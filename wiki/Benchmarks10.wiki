@@ -21,6 +21,8 @@ GLPK Version 4.27
 
 === CSP Benchmarks ===
 
+{{{
+
 vijay@vijay-hq:~/projects/cspsol/data$ cat allcases.txt 
 7
 case1.txt 2
@@ -55,8 +57,11 @@ Testcase #7:  Expected =   19, Actual =   22, Runtime =  551 Secs. FAIL.
 
 Finished all test cases in 552 Secs.
 
+}}}
+
 === BPP Benchmarks ===
 
+{{{
 
 vijay@vijay-hq:~/projects/cspsol/data$ cat bpcases.txt 
 9
@@ -99,3 +104,5 @@ Solving testcase no. 9... Done.
 Testcase #9:  Expected =   25, Actual =   25, Runtime =    1 Secs. PASS.
 
 Finished all test cases in 183 Secs.
+
+}}}
