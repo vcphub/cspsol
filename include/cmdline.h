@@ -19,6 +19,9 @@ class CmdOption
 		/* Input data file name */
 		char * data_file; 
 
+		/* Log (copy of terminal output) file name */
+		char * log_file; 
+
 		/* Subproblem glp_intopt. */
 		bool subintopt; 
 
@@ -51,6 +54,7 @@ class CmdOption
                 void process_arguments(int argc, char * argv[]);
                 void print_usage();
                 void print_version();
+		void silent_cout();
 		void redirect_cout();
 		void restore_cout();
 
