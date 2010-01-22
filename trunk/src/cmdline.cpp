@@ -75,6 +75,7 @@ void CmdOption::print_usage()
 	cout << "--cgroot	Perform column generation only at root node."<<endl;
 	cout << "--bpp		Assume input data file in bin packing problem (BPP) format."<<endl;
 	cout << "--silent	No output printed to terminal."<<endl;
+	cout << "--log filename  Write copy of terminal output to specified file."<<endl;
 
 	cout << "--otext filename"<<endl;	
 	cout << "		Write solution to specified file in text format."<<endl;
@@ -174,6 +175,16 @@ void CmdOption::process_arguments(int argc, char * argv[])
 			}    
 			this->data_file = argv[i];
 
+		} else if (parse_cla("-l") || parse_cla("--log")) {
+			i++; 
+			if (i == argc || argv[i][0] == '\0' || argv[i][0] == '-')  {
+				cerr << "cspsol error: Log file NOT specified." << endl;
+				print_usage();
+			}    
+			this->log_file = argv[i];
+		        /* Redirect terminal output */
+		        this->redirect_cout();
+
 		} else if (parse_cla("--oxml")) {
 			i++; 
 			if (i == argc || argv[i][0] == '\0' || argv[i][0] == '-')  {
@@ -201,15 +212,24 @@ void CmdOption::process_arguments(int argc, char * argv[])
 	}
 
 	if(this->silent == true) {
-		/* Redirect terminal output to file cout.txt opened using tout.*/
-		this->redirect_cout();
+                /* Silent mode : No terminal output. */
+		this->silent_cout();
 	}
 }
 
-/* Redirect terminal output to file cout.txt opened using tout.*/
+/* Silent mode : No terminal output. */
+void CmdOption::silent_cout()
+{
+        // back up cout's streambuf
+	this->cout_buf = cout.rdbuf();
+	cout.rdbuf(NULL); // trick is to set buffer to NULL.
+}
+
+/* Redirect terminal output to used specified file, opened using tout.*/
 void CmdOption::redirect_cout()
 {
-	this->tout.open("cout.txt");
+	this->tout.open(this->log_file);
+        // back up cout's streambuf
 	this->cout_buf = cout.rdbuf();
 	streambuf * tout_buf = this->tout.rdbuf();
 	cout.rdbuf(tout_buf);

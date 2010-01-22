@@ -34,8 +34,8 @@ struct TestCaseSol
 	time_t runtime; /* Time taken in secs. */
 };
 
-/* Global object to print debug information into a log file. */
-ofstream fout("log.txt");
+/* Global object to print BB progress information into a file. */
+ofstream fout("bb_log.txt");
 CmdOption * option = NULL;
 TestCaseSol * solve_csp();
 void run_testcases();

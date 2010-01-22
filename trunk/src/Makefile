@@ -38,4 +38,4 @@ pattern.o: pattern.cpp
 
 .PHONY: 
 clean:
-	rm $(OBJS) cspsol datagen *.lp log.txt
+	rm $(OBJS) cspsol datagen *.lp bb_log.txt
