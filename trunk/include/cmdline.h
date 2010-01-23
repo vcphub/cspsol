@@ -22,6 +22,9 @@ class CmdOption
 		/* Log (copy of terminal output) file name */
 		char * log_file; 
 
+                /* User specified run time limit in SECONDS */
+                int tm_lim;
+
 		/* Subproblem glp_intopt. */
 		bool subintopt; 
 

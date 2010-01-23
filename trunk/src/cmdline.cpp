@@ -10,6 +10,7 @@
 #include<string>
 #include<cstdlib>
 #include<cstring>
+#include<climits>
 #include "cmdline.h"
 
 using namespace std;
@@ -30,6 +31,7 @@ CmdOption::CmdOption()
         /* batch testing mode is off. */
 	test = false;           
 	tc_file = NULL;
+        tm_lim = 0;
 
         /* input data is CSP format. */
 	bpp = false;
@@ -76,6 +78,7 @@ void CmdOption::print_usage()
 	cout << "--bpp		Assume input data file in bin packing problem (BPP) format."<<endl;
 	cout << "--silent	No output printed to terminal."<<endl;
 	cout << "--log filename  Write copy of terminal output to specified file."<<endl;
+        cout << "--tmlim N       Limit solution time to N seconds."<<endl;
 
 	cout << "--otext filename"<<endl;	
 	cout << "		Write solution to specified file in text format."<<endl;
@@ -170,20 +173,40 @@ void CmdOption::process_arguments(int argc, char * argv[])
 		} else if (parse_cla("-d") || parse_cla("--data")) {
 			i++; 
 			if (i == argc || argv[i][0] == '\0' || argv[i][0] == '-')  {
-				cerr << "cspsol error: Orders data file NOT specified." << endl;
-				print_usage();
+				cerr << "cspsol error: Orders data file NOT specified.";
+                                cerr << " Please try cspsol --help."<<endl;
+				exit(-1);
 			}    
 			this->data_file = argv[i];
 
 		} else if (parse_cla("-l") || parse_cla("--log")) {
 			i++; 
 			if (i == argc || argv[i][0] == '\0' || argv[i][0] == '-')  {
-				cerr << "cspsol error: Log file NOT specified." << endl;
-				print_usage();
+				cerr << "cspsol error: Log file NOT specified.";
+                                cerr << " Please try cspsol --help."<<endl;
+				exit(-1);
 			}    
 			this->log_file = argv[i];
 		        /* Redirect terminal output */
 		        this->redirect_cout();
+
+		} else if (parse_cla("--tmlim")) {
+                        i++; 
+                        if (i == argc || argv[i][0] == '\0') {
+                                cerr << "No time limit specified.";
+                                cerr << " Please try cspsol --help."<<endl;
+				exit(-1);
+                        }    
+                        int tm_lim = atoi(argv[i]);
+                        if (tm_lim <= 0) {
+                                cout << "Invalid time limit '"<< argv[i] <<"' specified.";
+                                cerr << " Please try cspsol --help."<<endl;
+				exit(-1);
+                        }    
+                        if (tm_lim <= INT_MAX)
+                                this->tm_lim = tm_lim;
+                        else 
+                                this->tm_lim = INT_MAX;
 
 		} else if (parse_cla("--oxml")) {
 			i++; 
