@@ -66,6 +66,7 @@ public:
 
 	bool check_duplicate(Pattern * pattern);
 
+        void add_init_patterns(OrderWidthContainer& ow_set);
 	void add_exist_patterns();
 	void remove_patterns();
 	void unfix_all_vars();

@@ -47,6 +47,36 @@ BBNode::BBNode(long int node_id, BBNode * parent_node)
 }
 
 /*------------------------------------------------------------------------
+ * Create trivial pattern for each OrderWidth object.
+ * Add these patterns to the master problem.
+------------------------------------------------------------------------*/
+void BBNode::add_init_patterns(OrderWidthContainer& ow_set)
+{
+	OrderWidthIterator ow_iter = ow_set.begin();	
+	for(; ow_iter != ow_set.end(); ow_iter++) {
+
+		/* Only one non-zero element for each column/pattern. */
+		int nzcnt = 1; 
+		int * ind = new int[nzcnt+1];
+		double * val = new double[nzcnt+1];
+		ind[1] = (*ow_iter)->get_master_row_num();
+		val[1] = 1.0;
+
+		/* Create new pattern object and store arrays ind and val into it. */
+		Pattern * pattern = new Pattern();
+		pattern->ind = ind;
+		pattern->val = val;
+		pattern->nzcnt  = nzcnt;
+
+		this->pattern_list.push_back(pattern);
+		/* Add to global container AllPatternList. */
+		AllPatternList.push_back(pattern);
+	}
+
+	cout<<"Added initial patterns =  "<<ow_set.size()<<endl;
+}
+
+/*------------------------------------------------------------------------
 Add exiting columns to the master problem.
 ------------------------------------------------------------------------*/
 void BBNode::add_exist_patterns()
