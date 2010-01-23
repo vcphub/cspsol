@@ -95,7 +95,8 @@ TestCaseSol * solve_csp()
 	BBNode::set_best_int_obj_val(Infinity);
 	BBNode * root_node = new BBNode(master_lp, (long int)1);
 	bbnode_set.push_back(root_node);
-	add_init_patterns(root_node, master_lp, ow_set);
+        /* Create and store initial pattern in the root node. */
+	root_node->add_init_patterns(ow_set);
 
 	/* While Loop: Branch and bound algorithm. */
 	int solved_node_cnt = 1;
