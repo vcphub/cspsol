@@ -71,7 +71,7 @@ TestCaseSol * solve_csp()
 	/* Container object represents branch and bound tree. */
 	BBNodeContainer bbnode_set;	
 
-	time_t start_time, end_time;
+	time_t start_time, end_time, curr_time;
 	time(&start_time);
 
 	if(option->bpp == true)
@@ -100,8 +100,15 @@ TestCaseSol * solve_csp()
 
 	/* While Loop: Branch and bound algorithm. */
 	int solved_node_cnt = 1;
+        bool tm_lim_flag = false;
 	while(bbnode_set.empty() == false) {
-
+                /* Check for time limit. */
+                time(&curr_time); 
+                if(option->tm_lim && (curr_time - start_time) >= option->tm_lim) {
+                        tm_lim_flag = true;
+                        break;
+                }
+                                 
 		/* Select next node from the tree. */
 		BBNode * node = NULL;
 		if(option->search == BFS) {
@@ -144,17 +151,28 @@ TestCaseSol * solve_csp()
 	} 
 
 	/* Print solution report. */
-	cout << endl << "Branch and bound tree exhausted." << endl;
+        if(tm_lim_flag == true)
+	        cout << endl << "Specified time limit exceeded." << endl;
+        else
+	        cout << endl << "Branch and bound tree exhausted." << endl;
+
 	time(&end_time);
 	cout << endl << "# Total runtime = "<< (end_time - start_time) << " Secs"<< endl;
 
-	BestNode->print_text_report(cout, master_lp, ow_set);
-	BestNode->print_solution(master_lp, ow_set);
+        if(BestNode != NULL) {
+	        BestNode->print_text_report(cout, master_lp, ow_set);
+	        BestNode->print_solution(master_lp, ow_set);
+        } else {
+                cout << "No integer solution found." << endl;
+        }
 
 	/* Store result and other info. into a object. */
-	TestCaseSol * result = new TestCaseSol();
-	result->obj_val = BBNode::get_best_int_obj_val();
-	result->runtime = end_time-start_time;
+        TestCaseSol * result = NULL;
+	if(option->test == true) {
+	        result = new TestCaseSol();
+	        result->obj_val = BBNode::get_best_int_obj_val();
+	        result->runtime = end_time-start_time;
+        }
 
 	/* Memory cleanup and exit. */
 	glp_delete_prob(master_lp);
@@ -197,6 +215,7 @@ void run_testcases()
 		cout<<"Solving testcase no. "<< tc <<"...";
 		cout.flush();
 		option->silent = true;
+                // TODO : silent_cout
 		option->redirect_cout();
 
 		ftc >> filename >> exp_opt_val;
