@@ -147,17 +147,16 @@ Pattern * Pattern::get_new_pattern(BBNode * node, OrderWidthContainer& ow_set,
 
 		// Solve subproblem MIP using glp_intopt
 		new_pat = Pattern::generate_pattern(ow_set, iter_count, false);
-		if(node->check_duplicate(new_pat) == true) {
-
-			//new_pat->print_pattern();
+                /* Pointer new_pat could be NULL. */
+		if(new_pat && node->check_duplicate(new_pat) == true) {
 			/* Check if alternate optimal integer solution exists. */
 			if(option->workaround == true) {
 				fout << "Got duplicate pattern. Looking for alternate." << endl;
 				new_pat = Pattern::generate_pattern(ow_set, iter_count, true);
 			}
+		        if(new_pat && node->check_duplicate(new_pat) == true)
+			        new_pat = NULL;
 		}
-		if(node->check_duplicate(new_pat) == true)
-			new_pat = NULL;
 	}
 
 	return new_pat;
@@ -167,7 +166,7 @@ Pattern * Pattern::get_new_pattern(BBNode * node, OrderWidthContainer& ow_set,
 /*------------------------------------------------------------------------
 Description: Create and solve subproblem (integer knapsack problem). 
 Use optimal solution to sub-problem to generate best pattern. 
-Return value: Pointer to best pattern object.
+Return value: Pointer to best pattern object OR NULL.
 ------------------------------------------------------------------------*/
 
 Pattern * Pattern::generate_pattern(OrderWidthContainer& ow_set, int iter_count, 
