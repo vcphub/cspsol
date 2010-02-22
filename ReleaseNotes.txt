@@ -4,6 +4,34 @@
 ---------------------------------------------------------------------
 
 ---------------------------------------------------------------------
+Date: Wednesday, 23 February 2010. Version 1.01 Released.
+
+Major changes and features in this release are : 
+
+1. Resolved issues with --si mode (solves subproblem using MIP solver,
+instead of default dynamic programming algorithm.)
+
+2. Generating initial patterns : using first first decresing (FFD) 
+heuristics. Getting very good upper bounds and significant improvement 
+in the benchmarks.
+
+3. Support for new command line option '--tmlim' 
+ 3.1. User can now specify time limit on total runtime, in seconds. 
+ 3.2. If interger solution is found in time limit then solution
+ report is printed.
+
+4. Silent mode and log file feature. 
+ 4.1. Silent mode (--silent) shuns any output to 'cout'. Neither to terminal 
+nor to a file. Errors to 'cerr' should be printed. 
+ 4.2. Terminal output could be re-directed to user specified file using command 
+line option '--log filename'.  Similar to glpsol, however not a copy of 
+terminal output but redirection. 
+
+5. New BPP test cases included in benchmarks. All benchmarks should be 
+available on wiki page :
+http://code.google.com/p/cspsol/wiki/Benchmarks101
+
+---------------------------------------------------------------------
 Date: Wednesday, 20 January 2010. Version 1.0 Released.
 
 This release consists of major bug fixes and other improvements.

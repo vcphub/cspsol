@@ -93,9 +93,6 @@ to output terminal."<<endl<<endl;
 	cout << "--si		Use glp_intopt to solve subproblem (knapsack)."<<endl;
 	cout << "		By default dynamic programming is used."<<endl;
 
-	cout << "--wa		Use workaround to get alternate opt. int. sol."<<endl;
-	cout << "		To be used with --si. Needs changes/patch to GLPK lib."<<endl;
-
 	cout << "-h, --help	Display this help information and exit."<<endl;
 	cout << "-v, --version   Display version information and exit."<<endl;
 

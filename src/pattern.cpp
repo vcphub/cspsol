@@ -33,6 +33,7 @@ Pattern::Pattern(void)
 	this->var_status = FRACTIONAL;
 	this->fixed_status = false;
 	this->int_sol = 0.0;
+        this->unused_width = max_pattern_width;
 }
 
 /*------------------------------------------------------------------------
@@ -295,6 +296,47 @@ void Pattern::print_pattern()
 	for(int i = 1; i <= this->nzcnt; i++)
 		fout << "("<<this->ind[i]<<" "<<(this->val[i])<<"), ";
 	fout<<"}"<<endl;
+}
+
+/* 
+ * FFD heuristics for generating initial patterns :
+ * Given order width object and demand for the order widht, 
+ * assign/fit as much demand as possible to the pattern. 
+ * Calculate remaining demand.
+ * */
+void Pattern::assign_order_width(OrderWidth * ow, int& demand)
+{
+        int count = this->unused_width/ow->get_width();
+        if(count > demand) 
+                count = demand;
+
+        if(count == 0) 
+                return;
+
+        int nzcnt = this->nzcnt;
+
+        /* Copy arrays data from the pattern */
+	int * ind = new int[nzcnt+1+1];
+	double * val = new double[nzcnt+1+1];
+        if(this->ind && this->val) {
+                for(int i = 1; i <= nzcnt; i++) {
+                        ind[i] = this->ind[i];
+                        val[i] = this->val[i];
+                }
+        }
+
+	ind[nzcnt+1] = ow->get_master_row_num();
+	val[nzcnt+1] = count;
+
+        delete [] (this->ind); this->ind = NULL;
+        delete [] (this->val); this->val = NULL;
+
+        this->ind = ind;
+        this->val = val;
+        this->nzcnt++;
+        this->unused_width = this->unused_width - count * ow->get_width();
+
+        demand = demand - count; 
 }
 
 /*------------------------------------------------------------------------
