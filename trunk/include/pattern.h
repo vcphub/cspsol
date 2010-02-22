@@ -27,6 +27,7 @@ public:
 	double * val;
 	/* Non-zero count, length of arrays ind and val is nzcnt+1. */
 	int nzcnt;		
+        int unused_width; /* FFD */
 	
 	int get_master_col_num() { return master_col_num; }
 	void set_master_col_num(int n) { master_col_num = n; }
@@ -43,7 +44,7 @@ public:
 					bool alternate_sol_flag);
 	static bool check_duplicate(Pattern * pattern);
 	void print_pattern();
-
+        void assign_order_width(OrderWidth * ow, int& demand);
 
 	static void clean_up();
 

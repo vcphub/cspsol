@@ -1,5 +1,6 @@
 #include<vector>
 #include<string>
+#include<algorithm>
 #include<sstream>
 #include<cmath>
 #include<cassert>
@@ -47,33 +48,49 @@ BBNode::BBNode(long int node_id, BBNode * parent_node)
 }
 
 /*------------------------------------------------------------------------
- * Create trivial pattern for each OrderWidth object.
+ * Create initial patterns from given order widths.
+ * Use First Fit Decreasing (FFD) logic.
  * Add these patterns to the master problem.
 ------------------------------------------------------------------------*/
 void BBNode::add_init_patterns(OrderWidthContainer& ow_set)
 {
+        // Sort orders with decreasing width.
+        sort(ow_set.begin(), ow_set.end(), CmpOrderWidth());
+
 	OrderWidthIterator ow_iter = ow_set.begin();	
 	for(; ow_iter != ow_set.end(); ow_iter++) {
+                OrderWidth * ow = *(ow_iter);
 
-		/* Only one non-zero element for each column/pattern. */
-		int nzcnt = 1; 
-		int * ind = new int[nzcnt+1];
-		double * val = new double[nzcnt+1];
-		ind[1] = (*ow_iter)->get_master_row_num();
-		val[1] = 1.0;
+                // Explore existing patterns.
+	        PatternIterator pat_iter = AllPatternList.begin();
+                int demand = ow->get_demand();
+	        for(; pat_iter != AllPatternList.end(); pat_iter++) {
 
-		/* Create new pattern object and store arrays ind and val into it. */
-		Pattern * pattern = new Pattern();
-		pattern->ind = ind;
-		pattern->val = val;
-		pattern->nzcnt  = nzcnt;
+                        Pattern * pat = *(pat_iter);
 
-		this->pattern_list.push_back(pattern);
-		/* Add to global container AllPatternList. */
-		AllPatternList.push_back(pattern);
-	}
+                        if(demand == 0) break;
+                        pat->assign_order_width(ow, demand); 
 
-	cout<<"Added initial patterns =  "<<ow_set.size()<<endl;
+                        // else use next pattern;
+                }
+
+                // All existing patterns exhausted.
+                while(demand != 0) {
+                        Pattern * pattern = new Pattern();
+
+		        this->pattern_list.push_back(pattern);
+		        /* Add to global container AllPatternList. */
+		        AllPatternList.push_back(pattern);
+
+                        pattern->assign_order_width(ow, demand); 
+                        if(demand == 0) break;
+                        // else use new pattern.
+                }
+        } // next order width.
+
+        // TODO: 
+        //BBNode::set_best_int_obj_val(AllPatternList.size());
+        cout<<"Generated initial patterns. count = " << AllPatternList.size() << endl; 
 }
 
 /*------------------------------------------------------------------------

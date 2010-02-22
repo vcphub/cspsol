@@ -63,4 +63,18 @@ public:
 	~OrderWidth(void);
 };
 
+/* Function object. */
+class CmpOrderWidth
+{
+        public:
+                CmpOrderWidth() {}
+
+                bool operator()(OrderWidth * lhs, OrderWidth * rhs) {
+                        if(lhs->get_width() > rhs->get_width())
+                                return true;
+                        else 
+                                return false;
+                }
+};
+
 #endif
