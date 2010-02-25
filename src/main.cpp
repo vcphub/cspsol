@@ -39,6 +39,7 @@ ofstream fout("bb_log.txt");
 CmdOption * option = NULL;
 TestCaseSol * solve_csp();
 void run_testcases();
+extern int heur_obj_val;
 
 /* Program entry point */
 int main(int argc, char * argv[])
@@ -198,28 +199,30 @@ TestCaseSol * solve_csp()
 void run_testcases()
 {
 	ifstream ftc;
-	int tc_count;
-
 	assert(option->tc_file != NULL);
-	ftc.open(option->tc_file);				
-	ftc >> tc_count; /* test case count */
+
+	ftc.open(option->tc_file);
 
 	time_t start_time, end_time;
 	time(&start_time);
 
-	/* For all test cases. */
-	for(int tc = 1; tc <= tc_count; tc++) {
-		double exp_opt_val;
-		char filename[64];
+	/* Read test cases from specification file. */
+	//for(int tc = 1; tc <= tc_count; tc++) {
+        /* Read test case file name and optimal value. */
+	double exp_opt_val;
+	char filename[64];
+        int tc_index = 1;
+	ftc >> filename >> exp_opt_val;
+	while(!ftc.eof()) {
 
-		cout<<"Solving testcase no. "<< tc <<"...";
+		option->data_file = filename;
+
+		cout<<"Solving testcase no. "<< tc_index <<", '"<< option->data_file << "' ...";
 		cout.flush();
+
 		option->silent = true;
                 // TODO : silent_cout
 		option->redirect_cout();
-
-		ftc >> filename >> exp_opt_val;
-		option->data_file = filename;
 
 		/* Solve this test case. */
 		TestCaseSol * result = solve_csp();
@@ -227,9 +230,10 @@ void run_testcases()
 		option->restore_cout();
 		cout<<" Done. "<<endl;
 
-		cout<<"Testcase #"<< tc << ": ";
+		cout<<"Testcase #"<< tc_index << ": ";
 		cout<<" Expected = "<< setw(4) << exp_opt_val;
 		cout<<", Actual = "<< setw(4) << result->obj_val;
+		cout<<", Heuristic = "<< setw(4) << heur_obj_val;
 		cout<<", Runtime = " << setw(4) << result->runtime << " Secs.";
 
 		/* Compare obj. func. value with expected value. */
@@ -239,7 +243,11 @@ void run_testcases()
 			cout<<" FAIL."<<endl<<endl;
 
 		delete(result);
+                // process next test case file.
+	        ftc >> filename >> exp_opt_val;
+                tc_index++;
 	}
+
 	time(&end_time);
 	cout<<"Finished all test cases in "<<(end_time-start_time)<<" Secs."<<endl<<endl;
 }

@@ -63,7 +63,7 @@ public:
 	bool int_sol();
 	void branch(BBNodeContainer& bbnode_set);
 
-
+	Pattern * get_duplicate(Pattern * pattern);
 	bool check_duplicate(Pattern * pattern);
 
         void add_init_patterns(OrderWidthContainer& ow_set);

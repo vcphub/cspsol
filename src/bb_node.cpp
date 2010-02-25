@@ -18,6 +18,7 @@ const double Infinity = 100000.0;
 double BBNode::best_int_obj_val = Infinity;
 extern bool workaround_flag;
 BBNode * BestNode = NULL;
+int heur_obj_val = 0;
 
 /*------------------------------------------------------------------------
 Construct a BBNode object from lp pointer object.
@@ -54,6 +55,8 @@ BBNode::BBNode(long int node_id, BBNode * parent_node)
 ------------------------------------------------------------------------*/
 void BBNode::add_init_patterns(OrderWidthContainer& ow_set)
 {
+	BBNode * temp_node = new BBNode::BBNode(0, this);
+
         // Sort orders with decreasing width.
         sort(ow_set.begin(), ow_set.end(), CmpOrderWidth());
 
@@ -62,8 +65,8 @@ void BBNode::add_init_patterns(OrderWidthContainer& ow_set)
                 OrderWidth * ow = *(ow_iter);
 
                 // Explore existing patterns.
-	        PatternIterator pat_iter = AllPatternList.begin();
                 int demand = ow->get_demand();
+	        PatternIterator pat_iter = AllPatternList.begin();
 	        for(; pat_iter != AllPatternList.end(); pat_iter++) {
 
                         Pattern * pat = *(pat_iter);
@@ -75,22 +78,39 @@ void BBNode::add_init_patterns(OrderWidthContainer& ow_set)
                 }
 
                 // All existing patterns exhausted.
+                // Loop for generating new patterns till demand is satisfied.
                 while(demand != 0) {
+
                         Pattern * pattern = new Pattern();
-
-		        this->pattern_list.push_back(pattern);
-		        /* Add to global container AllPatternList. */
-		        AllPatternList.push_back(pattern);
-
                         pattern->assign_order_width(ow, demand); 
+
+                        Pattern * dupe_pattern = this->get_duplicate(pattern);
+			if(dupe_pattern) {
+                                /*  Found same pattern. */
+                                delete pattern;
+                                pattern = dupe_pattern;
+                        } else {
+                                /* Add new pattern to both lists. */
+		                this->pattern_list.push_back(pattern);
+		                temp_node->pattern_list.push_back(pattern);
+		                AllPatternList.push_back(pattern);
+                        }
+                        /* Increment count. */
+                        double x = pattern->get_int_sol();
+                        pattern->set_int_sol(x + 1.0);
+
                         if(demand == 0) break;
                         // else use new pattern.
                 }
         } // next order width.
 
-        // TODO: 
-        //BBNode::set_best_int_obj_val(AllPatternList.size());
-        cout<<"Generated initial patterns. count = " << AllPatternList.size() << endl; 
+        heur_obj_val = 0;
+	PatternIterator pat_iter = AllPatternList.begin();
+	for(; pat_iter != AllPatternList.end(); pat_iter++) {
+                heur_obj_val += (*pat_iter)->get_int_sol();
+        }
+        BBNode::set_best_int_obj_val(heur_obj_val);
+        BestNode = temp_node;
 }
 
 /*------------------------------------------------------------------------
@@ -409,6 +429,18 @@ bool BBNode::check_duplicate(Pattern * pattern)
 
 	return false;
 }
+
+Pattern * BBNode::get_duplicate(Pattern * pattern)
+{
+	PatternIterator pat_iter = pattern_list.begin();	
+	for(; pat_iter != pattern_list.end(); pat_iter++) {
+		if(pattern_compare((*pat_iter), pattern) == true)
+			return (*pat_iter);
+	}
+
+	return NULL;
+}
+
 
 /*------------------------------------------------------------------------
  * Precondition: Integer solution exists for master lp.
