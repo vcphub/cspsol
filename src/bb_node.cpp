@@ -148,7 +148,8 @@ void BBNode::solve(OrderWidthContainer& ow_set)
 {
 	int curr_pat_cnt = pattern_list.size();
 
-	fout<<endl<< "["<<(this->node_id)<<"]"<<" Solving BB Node"<<endl<<endl;
+	if(option->test == false)
+	        fout<<endl<< "["<<(this->node_id)<<"]"<<" Solving BB Node"<<endl<<endl;
 
 	/* Add columns to master problem for all patterns. */
 	this->add_exist_patterns();
@@ -170,7 +171,8 @@ void BBNode::solve(OrderWidthContainer& ow_set)
 
 		if(glp_get_status(master_lp) != GLP_OPT) break;
 
-		fout << "Obj Func Value = " << glp_get_obj_val(master_lp) << endl;
+	        if(option->test == false)
+		        fout << "Obj Func Value = " << glp_get_obj_val(master_lp) << endl;
 		if((this->node_id != 1) && (option->cg_root_only)) break;
 
 		/* Store dual values in OrderWidth objects. */
@@ -291,7 +293,8 @@ void BBNode::branch(BBNodeContainer& bbnode_set)
 	left_child->add_var_fix(col_ind, 0.0, floor_x);
 	bbnode_set.push_back(left_child);
 
-	fout<<"Branching on pattern variable, col index = "<<col_ind<<endl;
+	if(option->test == false)
+	        fout<<"Branching on pattern variable, col index = "<<col_ind<<endl;
 }
 
 /*------------------------------------------------------------------------

@@ -8,6 +8,7 @@
 
 #include<iostream>
 #include<fstream>
+#include<sstream>
 #include<iomanip>
 #include<string>
 #include<vector>
@@ -198,22 +199,41 @@ TestCaseSol * solve_csp()
 -------------------------------------------------------------------*/
 void run_testcases()
 {
-	ifstream ftc;
+        ifstream ftc;  // READ from test cases specs file.
+        ofstream fres; // WRITE to test run results file.
 	assert(option->tc_file != NULL);
 
 	ftc.open(option->tc_file);
+        if(option->bpp == false)
+	        fres.open("csp-results.txt");
+        else
+	        fres.open("bpp-results.txt");
 
 	time_t start_time, end_time;
 	time(&start_time);
 
 	/* Read test cases from specification file. */
-	//for(int tc = 1; tc <= tc_count; tc++) {
         /* Read test case file name and optimal value. */
 	double exp_opt_val;
 	char filename[64];
+	string buffer;
         int tc_index = 1;
-	ftc >> filename >> exp_opt_val;
+
+        getline(ftc, buffer);
+        istringstream ss(buffer);
+	ss >> filename >> exp_opt_val;
+        
+        /* Print 'cspsol' version no. and header. */
+        fres<<"cspsol, version "<< VERSION_NUMBER <<endl;
+	fres<<"Sr.No, Testcase, Expected, Actual, Heurtics, Runtime (Secs), Status"<<endl;
 	while(!ftc.eof()) {
+
+                if(buffer[0] == '#') {
+                        getline(ftc, buffer);
+                        continue;
+                }
+                istringstream ss(buffer);
+	        ss >> filename >> exp_opt_val;
 
 		option->data_file = filename;
 
@@ -230,25 +250,28 @@ void run_testcases()
 		option->restore_cout();
 		cout<<" Done. "<<endl;
 
-		cout<<"Testcase #"<< tc_index << ": ";
-		cout<<" Expected = "<< setw(4) << exp_opt_val;
-		cout<<", Actual = "<< setw(4) << result->obj_val;
-		cout<<", Heuristic = "<< setw(4) << heur_obj_val;
-		cout<<", Runtime = " << setw(4) << result->runtime << " Secs.";
+		fres<< setw(3) << tc_index << ", ";
+		fres<< setw(3) << option->data_file << ", ";
+		fres<< setw(4) << exp_opt_val << ", ";
+		fres<< setw(4) << result->obj_val << ", ";
+		fres<< setw(4) << heur_obj_val << ", ";
+		fres<< setw(4) << result->runtime << ", ";
 
 		/* Compare obj. func. value with expected value. */
 		if(fabs(result->obj_val - exp_opt_val) < 1e-7)
-			cout<<" PASS."<<endl<<endl;
+			fres<<" PASS."<<endl;
 		else				
-			cout<<" FAIL."<<endl<<endl;
+			fres<<" FAIL."<<endl;
 
 		delete(result);
                 // process next test case file.
-	        ftc >> filename >> exp_opt_val;
+                getline(ftc, buffer);
                 tc_index++;
 	}
 
 	time(&end_time);
+        ftc.close();
+        fres.close();
 	cout<<"Finished all test cases in "<<(end_time-start_time)<<" Secs."<<endl<<endl;
 }
 
