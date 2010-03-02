@@ -146,4 +146,4 @@ Next BPP test case in the list 'bpp/N2C3W2_B.BPP' takes too much time. I have no
 
 This release provides a systematic way of running the test cases and comparing results. Test case results are stored in file 'csp-results.txt' and 'bpp-results.txt' for CSP and BPP respectively. 
 
-For each test cases, the optimal solution obtained using column generation is 
+For each test cases, the optimal solution obtained using branch & price method is compared with optimal solution obtained using First Fit Decreased (FFD) heuristic. We expect that branch & price method produces better solution. 
