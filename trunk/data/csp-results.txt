@@ -1,0 +1,9 @@
+cspsol, version 1.02
+Sr.No, Testcase, Expected, Actual, Heurtics, Runtime (Secs), Status
+  1, case1.txt,    2,    2,    2,    0,  PASS.
+  2, case2.txt,   32,   32,   36,    0,  PASS.
+  3, case3.txt,   16,   16,   17,    0,  PASS.
+  4, case4.txt,   18,   18,   22,    0,  PASS.
+  5, case5.txt,    9,    9,   10,    0,  PASS.
+  6, case6.txt,    5,    5,    5,    0,  PASS.
+  7, case7.txt,   19,   21,   22,  167,  FAIL.

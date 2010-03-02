@@ -16,7 +16,6 @@
 using namespace std;
 // Macro
 #define parse_cla(str) (strcmp(argv[i], str) == 0)
-#define VERSION_NUMBER "1.0"
 
 /*-------------------------------------------------------------------
 Constructor. 

@@ -7,6 +7,8 @@
 enum SearchStrategy {DFS, BFS};
 enum ReportFormat {TEXT, XML};
 
+#define VERSION_NUMBER "1.02"
+
 /*
  * Command line options.
  * */

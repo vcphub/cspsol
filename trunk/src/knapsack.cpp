@@ -36,10 +36,10 @@ PatternContainer * get_dp_solution(OrderWidthContainer& owc,
 	}
 
 	/* Use final solution AllKnapSolSets[max_width]. */
-	/* For each KnapSol object, create Pattern object. */
 	KnapSolSet * opt_ss = AllKnapSolSets[max_width];
 	PatternContainer * opt_pat_set = new PatternContainer();
 
+	/* For each KnapSol object, create Pattern object. */
 	for(int si = 0; si < opt_ss->get_size(); si++) {
 
 		KnapSol * sol = opt_ss->get_solution(si);
