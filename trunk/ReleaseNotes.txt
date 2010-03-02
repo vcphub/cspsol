@@ -4,6 +4,18 @@
 ---------------------------------------------------------------------
 
 ---------------------------------------------------------------------
+Date: Tuesday, 02 March 2010. Version 1.02 Released.
+
+Major changes and features in this release are : 
+
+1. Initial pattern generation : Trivial logic is replaced with 
+First Fit Decreasing (FFD) heuristic. FFD heuristic also provides
+integer solution bound for pruning B&B tree.
+
+2. Improve testing framework. Added more BPP test cases. Got 
+improved results.
+
+---------------------------------------------------------------------
 Date: Wednesday, 23 February 2010. Version 1.01 Released.
 
 Major changes and features in this release are : 
