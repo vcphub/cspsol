@@ -1,0 +1,92 @@
+-----------------------------------------------------------------------
+        README
+-----------------------------------------------------------------------
+Directory 'cspsol/data' contains sample CSP problems and test cases for 
+testing 'cspsol'. The test cases are used to evaluate the quality of 
+solution given by 'cspsol'.
+
+---------------------------
+ Test Cases
+---------------------------
+
+case1.txt :  Trivial test case.
+case7.txt :  Contributed by Jonathan.
+
+TODO : bpp/N2C3W2_B.BPP
+
+---------------------------
+ Simple testing
+---------------------------
+
+Simplest way to test program 'cspsol' is to use it to solve a CSP or BPP problem.
+
+Copy 'cspsol' executable to 'data' directory (where problem files reside.).
+Run following command.
+
+~/projects/cspsol/data$ cspsol --data case1.txt
+~/projects/cspsol/data$ cspsol --data your-csp-problem.txt
+
+---------------------------
+ Batch mode testing
+---------------------------
+
+Program 'cspsol' supports solving CSP problems in a batch mode.
+
+Command line option '--test' and test case specification file could 
+be used to run more than one test cases in batch mode. Following is 
+a sample test case specification file:
+
+Sample specification file provided is 'allcases.txt'.
+~/projects/cspsol/data$ cat allcases.txt 
+7
+case1.txt 2
+case2.txt 32
+case3.txt 16
+case4.txt 18
+case5.txt 9
+case6.txt 5
+case7.txt 19
+
+First line of the test case specification file must be number of test 
+cases. Next lines contain test case file name as first field, and expected 
+value of optimal objective value as second field. If  optimal objective 
+value of solution produced by 'cspsol' matches with the expected value 
+then test cases is “PASSED” otherwise “FAILED”.
+
+To run CSP test cases in batch mode, copy 'cspsol' executable to 'data' 
+directory (where test cases specification file resides.). Run following 
+command.
+
+~/projects/cspsol/data$ cspsol --test allcases.txt
+
+---------------------------
+ Bin Packing Problems
+---------------------------
+
+Directory 'cspsol/data/bpp' contains instances copied from :
+http://www.wiwi.uni-jena.de/Entscheidung/binpp/bin1dat.htm
+
+To run BPP test cases in batch mode, create a test specification file.
+
+Sample specification file provided is 'bpcases.txt'.
+
+For example :
+~/projects/cspsol/data$ cat bpcases.txt 
+9
+bpp/N1C1W1_A.BPP 25
+bpp/N1C1W1_B.BPP 31
+bpp/N1C1W1_C.BPP 20
+bpp/N1C1W1_D.BPP 28 
+bpp/N1C1W1_E.BPP 26 
+bpp/N1C1W1_F.BPP 27 
+bpp/N1C1W1_G.BPP 25 
+bpp/N1C1W1_H.BPP 31 
+bpp/N1C1W1_I.BPP 25 
+
+To run CSP test cases in batch mode, copy 'cspsol' executable to 'data' 
+directory (where test cases specification file resides.). Run following 
+command.
+
+~/projects/cspsol/data$ cspsol --bpp --test bpcases.txt
+
+EOF

@@ -1,0 +1,371 @@
+
+---------------------------------------------------------------------
+		cspsol: Release Notes
+---------------------------------------------------------------------
+
+---------------------------------------------------------------------
+Date: Tuesday, 02 March 2010. Version 1.02 Released.
+
+Major changes and features in this release are : 
+
+1. Initial pattern generation : Trivial logic is replaced with 
+First Fit Decreasing (FFD) heuristic. FFD heuristic also provides
+integer solution bound for pruning B&B tree.
+
+2. Improve testing framework. Added more BPP test cases. Got 
+improved results.
+
+---------------------------------------------------------------------
+Date: Wednesday, 23 February 2010. Version 1.01 Released.
+
+Major changes and features in this release are : 
+
+1. Resolved issues with --si mode (solves subproblem using MIP solver,
+instead of default dynamic programming algorithm.)
+
+2. Generating initial patterns : using first first decresing (FFD) 
+heuristics. Getting very good upper bounds and significant improvement 
+in the benchmarks.
+
+3. Support for new command line option '--tmlim' 
+ 3.1. User can now specify time limit on total runtime, in seconds. 
+ 3.2. If interger solution is found in time limit then solution
+ report is printed.
+
+4. Silent mode and log file feature. 
+ 4.1. Silent mode (--silent) shuns any output to 'cout'. Neither to terminal 
+nor to a file. Errors to 'cerr' should be printed. 
+ 4.2. Terminal output could be re-directed to user specified file using command 
+line option '--log filename'.  Similar to glpsol, however not a copy of 
+terminal output but redirection. 
+
+5. New BPP test cases included in benchmarks. All benchmarks should be 
+available on wiki page :
+http://code.google.com/p/cspsol/wiki/Benchmarks101
+
+---------------------------------------------------------------------
+Date: Wednesday, 20 January 2010. Version 1.0 Released.
+
+This release consists of major bug fixes and other improvements.
+
+1. Fixed major memory leak bug in DP algorithm. Thanks to Jonathan Mitchell
+for reporting the problem and Francesco (ilpanda) for helping in 
+identifying the cause & testing.
+
+2. Unnecessary BB nodes are not deleted, reducing memory usage. Thanks to 
+Francesco for suggestion.
+
+3. Update CSP and BPP test case specs file. Added BPP instances.
+
+4. Added copy of GNU GPL version 3 license.
+
+5. Design document was updated and improved. While creating the document, 
+code was reviewed, refactored and comments were added.
+
+---------------------------------------------------------------------
+Date: Monday, 22 September 2008. Version 0.9 Released.
+
+New features were added in this release.
+
+1. By default, column generation (CG) is now done at every node of 
+Branch & Bound (BB) tree. Main objective behind adding this feature 
+was to avoid generating multiple integer optimal solutions for subproblem, 
+which consumes memory and time resources. 
+
+I got mixed results, we still need to generate multiple solutions 
+to subproblem. More work is needed on this issue.
+
+2. Added new command line option '--cgroot'. If this option is used
+then CG is done only at root node. By default CG is done at every
+node of BB tree.
+
+3. Added new command line option '--bpp', which reads input data file
+in BPP format. Added sample test case specification file 'data/bpcases.txt' 
+
+Actual test cases should be downloaded from:
+http://www.wiwi.uni-jena.de/Entscheidung/binpp/index.htm
+
+4. Testing: Various test benchmarks will be soon published at:
+http://code.google.com/p/cspsol/wiki/Benchmarks09
+
+5. Other changes to make code more readable and consistent with 
+design document.
+
+---------------------------------------------------------------------
+Date: Saturday, 30 August 2008. Version 0.8 Released.
+
+This release addresses issues faced while solving large input.
+
+BUG fix: Fixed bug in logic related to option --test. 
+
+Introduced commandline option '-Olevel' to control optimization 
+level (how close solution is to true optimal). Valid values 
+of level are 1, 2 and 3. Default value is 1.0
+
+This value of optimization level controls number of solutions
+stored (in memory) while solving knapsack problem. This in turn 
+determines the runtime and memory consumed.
+
+Higher value of level means more number of solutions are stored, 
+and requires higher runtime and more memory. Higher value of level
+is likely to produce all patterns and hence final solution will be
+closer to true optimal integer solution. For example:
+
+$ cspsol -d ../data/case6.txt
+Best integer obj. func. value = 6
+
+$ cspsol -O3 -d ../data/case6.txt
+Best integer obj. func. value = 5
+
+Future plan: To get true optimal solutions in reasonable time, we need
+make following changes:
+
+- Use column generation to generate patterns at each node of branch and 
+bound tree. Right now we do it only for root node.
+
+- Generate only one optimal solution to knapsack sub-problem. Right now
+we have multiple optimal solutions, which causes exponential increase in
+memory required to store all solutions.
+
+- Store generating pattern is reduced cost of generated pattern is greater 
+than 0.0. Right now we do it till no new pattern is generated.
+
+---------------------------------------------------------------------
+Date: Friday, 22 August 2008. Version 0.7 Released.
+
+This release contains a bug fix and new features for users and developers.
+
+1. Uninitialized variable caused a bug in last version. Fixed it.
+Thanks to Guillaume Jacquenot for bug reports and patience.
+
+2. Henry Palonen completed XML solution report feature.
+Related command line option '--oxml filename' was introduced in last version.
+Thanks Henry.
+
+3. For developers interested in testing cspsol against different test
+cases, added new feature do make this easy.
+
+New command line option '--test filename' runs all test cases specified
+in the test specification file 'filename'. The filename format is:
+
+N
+order-data-file-name1 expected_opt_value1
+order-data-file-name2 expected_opt_value2
+order-data-file-nameN expected_opt_valueN
+ 
+where N is number of test cases. Sample test specs file and test cases
+can be found in directory cspsol/data. 
+
+$ cat allcases.txt 
+6
+case1.txt 2
+case2.txt 32
+case3.txt 15
+case4.txt 18
+case5.txt 9
+case6.txt 4
+$
+$ cspsol --test allcases.txt.
+Solving testcase no. 1... Done. 
+Testcase: 1 Expected = 2, Actual = 2 PASS
+
+Solving testcase no. 2... Done. 
+Testcase: 2 Expected = 32, Actual = 32 PASS
+
+Solving testcase no. 3... Done. 
+Testcase: 3 Expected = 15, Actual = 15 PASS
+
+Solving testcase no. 4... Done. 
+Testcase: 4 Expected = 18, Actual = 18 PASS
+
+Solving testcase no. 5... Done. 
+Testcase: 5 Expected = 9, Actual = 9 PASS
+
+Solving testcase no. 6... Done. 
+Testcase: 6 Expected = 4, Actual = 4 PASS
+
+---------------------------------------------------------------------
+Date: Wednesday, 20 August 2008. Version 0.6 Released.
+
+Contains new features.
+
+1. Added new command line options --silent, --otext, --oxml.
+Options --otext and --oxml can be used to generate output solution 
+report in text and xml formats. 
+
+2. If input file name is 'stdin' then input is read from standard
+input. For example:
+
+$cat input.txt | cspsol -d stdin
+
+3. For options, --otext, --oxml, if output file name is 'stdout' 
+then solution report is printed to standard output.
+
+4. Option will --silent will not print any progress messages on
+standard output. However if options --otext or --oxml specify 'stdout' as 
+filename then solution will be printed on standard output.
+
+5. By default (cspsol -d input.txt), progress messages and solution report 
+are printed to standard output.
+
+---------------------------------------------------------------------
+Date: Monday, 18 August 2008. Version 0.5 Released.
+
+This release contains a long term solution to fix issue:
+http://code.google.com/p/cspsol/issues/detail?id=1
+
+The subproblem (knapsack problem) is now solved by dynamic programming (DP)
+algorithm. Quality of solution is given importance over total runtime. 
+Having access to all optimal integer solutions (which are used to generate 
+a new pattern) obtained using DP solves the issue.
+
+In the input data file, order widths and max. order width must be INTEGERs, in
+order for DP algorithm to work correctly. By default, this version does not
+require any modifications to GLPK source code.
+
+[Testcase]
+
+$ cspsol -d o1.txt 
+
+Reading order data from file o1.txt
+Total orders read from file = 2
+2000 4
+1000 4
+Add order demand constraints. Total rows, cols = 2, 0
+Added initial patterns. Total rows, cols = 2, 2
+Node    1: new patterns =    4 Obj Func Value = 2 Branch.
+Node    2: new patterns =    0 Obj Func Value = 2.33333 Branch.
+Node    3: new patterns =    0 Obj Func Value = 2 INTEGER ***
+Node    4: new patterns =    0 Obj Func Value = 3 INTEGER ***
+Node    5: new patterns =    0 LP worse than integer incumbent 2.5 >= 2. Fathom node. 
+
+Branch and bound tree exhausted.
+
+ # Solution Report # 
+
+Best integer obj. func. value = 2
+Pattern count =    1:  2000 x  3, 
+Pattern count =    1:  2000 x  1,  1000 x  4, 
+
+# Total runtime = 0 Secs
+
+[End Testcase]
+
+To solve subproblem using GLPK glp_int, instead of DP, new commandline option 
+--subintopt (--si) is introduced.
+
+$ cspsol --subintopt -d o1.txt
+
+To use option --wa, you must use patched GLPK lib which allows -ve tol_obj.
+
+$ cspsol --subintopt --wa -d o1.txt
+
+Type 'cspsol --help' for viewing changed help information.
+
+---------------------------------------------------------------------
+Date: Thursday, 14 August 2008. Version 0.4 Released.
+
+This release contains a workaound to solve issue described here:
+http://code.google.com/p/cspsol/issues/detail?id=1
+
+Workaround is disable by default. To enable use of commandline flag
+--wa is needed.
+
+Workaound is dependant on following code change in GLPK source code.
+
+Comment out following segment of the code in GLPK, compile and build.
+Function: int glp_intopt(glp_prob *mip, const glp_iocp *parm)
+File: glpapi08.c
+if (!(0.0 < parm->tol_obj && parm->tol_obj < 1.0))
+	xfault("glp_intopt: tol_obj = %g; invalid parameter\n",
+						parm->tol_obj);
+
+
+# Example
+
+$ cat o1.txt 
+6000
+2000 4
+1000 4
+
+$ cspsol --wa --data o1.txt 
+Reading order data from file o1.txt
+Total orders read from file = 2
+2000 4
+1000 4
+Add order demand constraints. Total rows, cols = 2, 0
+Added initial patterns. Total rows, cols = 2, 2
+Node    1: new patterns =    3 Obj Func Value = 2 Branch.
+Node    2: new patterns =    0 Obj Func Value = 2.33333 Branch.
+Node    3: new patterns =    0 Obj Func Value = 2 INTEGER ***
+Node    4: new patterns =    0 Obj Func Value = 3 INTEGER ***
+Node    5: new patterns =    0 LP worse than integer incumbent 2.5 >= 2. Fathom node. 
+
+Branch and bound tree exhausted.
+
+ # Solution Report # 
+
+Best integer obj. func. value = 2
+Pattern count =    2:  2000 x  2,  1000 x  2, 
+
+# Total runtime = 0 Secs
+
+---------------------------------------------------------------------
+Date: Monday, 31 March 2008. Version 0.3 Released.
+
+1. Now CG is done only at the root node of BB tree. CG at all nodes of
+BB tree requires some more thought.
+2. Removed slack variables, instead added trivial patterns to the
+master problem. (as Andrew suggested.)
+3. Now order width can be integer/float.
+4. Improved formatting etc.
+5. Moved files INSTALL and README from /src to parent dir.
+6. Updated homepage http://code.google.com/p/cspsol/
+
+---------------------------------------------------------------------
+Date: Sunday, 30 March 2008. Version 0.2 Released.
+
+Added some command line options. Added support for two search
+strategies (DFS and BFS).
+
+$ cspsol --help
+
+Usage: cspsol [options...] --data filename
+
+Where filename contains orders data in following format.
+maximum_pattern_width
+order_width_1 demand_1
+order_width_2 demand_2
+order_width_n demand_n
+
+All demand quantities are <= maximum_pattern_width.
+
+Options:
+--dfs           Process branch and bound tree in depth first manner.
+--bfs           Process branch and bound tree in breadth first manner.
+-h, --help      Display this help information and exit.
+
+---------------------------------------------------------------------
+Date: Saturday, 29 March 2008. Version 0.1 Released.
+
+Following mail posted on GLPK mailing list announcing version 0.1.
+
+"I wrote a program to solve cutting stock problem. Program is written
+in C++ and uses GLPK C API.  Customized branch & bound (BB) algorithm
+is used. Each node of BB tree is a LP. Each node LP is solved using
+column generation (CG). Very simple branching on fractional variable
+is used to obtain integer solution. BB tree is traversed using breadth
+first search (BFS) strategy.
+
+Hopefully program will be useful to anyone interested in learning GLPK
+C API and understand column generation technique. In case you want to
+have a look at the source code, following web-page has more details,
+including source code:
+
+http://code.google.com/p/cspsol/
+
+I have not tested the program extensively. It is likely that program
+has some flaw or incorrect use of GLPK C API. Your feedback/comments
+are welcome."
+
+---------------------------------------------------------------------
