@@ -55,7 +55,7 @@ BBNode::BBNode(long int node_id, BBNode * parent_node)
 ------------------------------------------------------------------------*/
 void BBNode::add_init_patterns(OrderWidthContainer& ow_set)
 {
-	BBNode * temp_node = new BBNode::BBNode(0, this);
+	BBNode * temp_node = new BBNode(0, this);
 
         // Sort orders with decreasing width.
         sort(ow_set.begin(), ow_set.end(), CmpOrderWidth());
