@@ -6,4 +6,5 @@ Sr.No, Testcase, Expected, Actual, Heurtics, Runtime (Secs), Status
   4, case4.txt,   18,   18,   22,    0,  PASS.
   5, case5.txt,    9,    9,   10,    0,  PASS.
   6, case6.txt,    5,    5,    5,    0,  PASS.
-  7, case7.txt,   19,   21,   22,  167,  FAIL.
+  7, case7.txt,   19,   21,   22,    9,  FAIL.
+  8, case8.txt,   12,   12,   13,    0,  PASS.

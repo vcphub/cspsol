@@ -133,9 +133,9 @@ TestCaseSol * solve_csp()
 
 		else if(node->get_lp_status() == OPT_NONINT) {
 
-			if(node->get_opt_obj_val() >= BBNode::get_best_int_obj_val()-1.0) {
+			if(node->get_opt_obj_val() >= BBNode::get_best_int_obj_val()-1.0+EPSILON) {
 				cout << "LP worse than integer incumbent "<< node->get_opt_obj_val();
-				cout <<" >= " << BBNode::get_best_int_obj_val();
+				cout <<" >= " << BBNode::get_best_int_obj_val()-1.0;
 				cout << ". Fathom node. "<<endl;
 
 			} else {
