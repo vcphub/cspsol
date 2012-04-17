@@ -46,6 +46,13 @@ OrderWidth::OrderWidth(double width, int demand)
 }
 
 /*------------------------------------------------------------------------
+ * Cleanup orderwidth
+------------------------------------------------------------------------*/
+OrderWidth::~OrderWidth(void)
+{
+}
+
+/*------------------------------------------------------------------------
 # Static function.
 # Description: Read item data from file and populate container object. 
 Although input data is for Bin Packing Problem (BPP). It is converted
@@ -111,10 +118,10 @@ void OrderWidth::read_order_data(OrderWidthContainer& ow_set, std::string filena
 
 	if(filename == "stdin") {
 		cin >> max_pattern_width;
-		cin >> width >> demand;		
+		cin >> width >> demand;
 		while(cin.eof() == 0)
 		{
-                        // Create new object and add it to order width set.
+      // Create new object and add it to order width set.
 			OrderWidth * order = new OrderWidth(width, demand);
 			ow_set.push_back(order);
 			cin >> width >> demand;	 /* read next line */
@@ -128,12 +135,13 @@ void OrderWidth::read_order_data(OrderWidthContainer& ow_set, std::string filena
 		fin >> width >> demand;		
 		while(fin.eof() == 0)
 		{
-                        // Create new object and add it to order width set.
+      // Create new object and add it to order width set.
 			OrderWidth * order = new OrderWidth(width, demand);
 			ow_set.push_back(order);
 			fin >> width >> demand;	 /* read next line */
 		}	
-		cout<<"Total orders read from file = "<<(ow_set.size())<<endl;
+		cout << "Total orders read from file = " << ow_set.size() <<endl;
+		cout << "Maximum pattern width = " << max_pattern_width <<endl;
 		fin.close();
 	}
 }
@@ -174,13 +182,6 @@ OrderWidth* OrderWidth::find_orderwidth(OrderWidthContainer& ow_set, int row_ind
 	}
 	assert(0);
 	return NULL;
-}
-
-/*------------------------------------------------------------------------
- * Cleanup orderwidth
-------------------------------------------------------------------------*/
-OrderWidth::~OrderWidth(void)
-{
 }
 
 

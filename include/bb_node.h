@@ -12,9 +12,12 @@ enum NodeStatus {NOT_SOLVED, OPT_NONINT, OPT_INT, REAL_INFEA};
 
 class VariableFix {
 	public:
-		int col_ind; /* column index of variable to be fixed. */
-		double lb; /* Lower bound on the variable. */
-		double ub; /* Upper bound on the variable. */
+		int col_ind; 
+		/* column index of variable to be fixed. */
+		double lb; 
+		/* Lower bound on the variable. */
+		double ub; 
+		/* Upper bound on the variable. */
 };
 
 class BBNode;	/* Forward declaration */
@@ -28,58 +31,63 @@ typedef std::vector<double> DblContainer;
 /* class: Branch and Bound Tree Node */
 class BBNode
 {
-	long int node_id;
-	/* Pointer to master problem object. */
-	glp_prob * master_lp;
-	NodeStatus lp_status;	/* Status of master_lp after solving it. */
+	public:
+		PatternContainer pattern_list;
+		BBNode(glp_prob * lp, long int node_id);
+		BBNode(long int node_id, BBNode * parent_node);
+		~BBNode(void);
 
-	/* Optimal objective function value of the lp. */
-	double opt_obj_val;	
-	static double best_int_obj_val;
+		int get_pat_cnt() { return pat_cnt; } 
+		long int get_node_id() { return node_id; }
+		NodeStatus get_lp_status() { return lp_status; }
+		double get_opt_obj_val() { return opt_obj_val; }
+		static double get_best_int_obj_val() { return best_int_obj_val; }
+		static void set_best_int_obj_val(double val) { best_int_obj_val = val; }
 
-	IntContainer fix_col_ind_list;
-	DblContainer lb_list;
-	DblContainer ub_list;
-	/* Number of new patterns added while solving this node. */
-	int pat_cnt;		
+		void add_var_fix(int col_ind, double lb, double ub);
+		int find_var_fix(int col_ind);
+		void solve(OrderWidthContainer& ow_set);
+		bool int_sol();
+		void branch(BBNodeContainer& bbnode_set);
 
-public:
+		Pattern * get_duplicate(Pattern * pattern);
+		bool check_duplicate(Pattern * pattern);
 
-	PatternContainer pattern_list;
-	BBNode(glp_prob * lp, long int node_id);
-	BBNode(long int node_id, BBNode * parent_node);
-	~BBNode(void);
+		void add_init_patterns(OrderWidthContainer& ow_set);
+		void add_exist_patterns();
+		void remove_patterns();
+		void unfix_all_vars();
+		void fix_vars();
 
-	int get_pat_cnt() { return pat_cnt; } 
-	long int get_node_id() { return node_id; }
-	NodeStatus get_lp_status() { return lp_status; }
-	double get_opt_obj_val() { return opt_obj_val; }
-	static double get_best_int_obj_val() { return best_int_obj_val; }
-	static void set_best_int_obj_val(double val) { best_int_obj_val = val; }
+		void store_solution(glp_prob * master_lp);
+		void print_solution(glp_prob* master_lp, OrderWidthContainer& ow_set);
+		void print_xml_report(std::ostream&, glp_prob * master_lp, 
+										OrderWidthContainer& ow_set); 
+		void print_json_report(std::ostream&, glp_prob * master_lp, 
+										OrderWidthContainer& ow_set); 
+		void print_text_report(std::ostream&, glp_prob * master_lp, 
+										OrderWidthContainer& ow_set);
 
-	void add_var_fix(int col_ind, double lb, double ub);
-	int find_var_fix(int col_ind);
-	void solve(OrderWidthContainer& ow_set);
-	bool int_sol();
-	void branch(BBNodeContainer& bbnode_set);
+		void print_lp_file(int iter_count);
+		static void clean_up(BBNodeContainer& bbset);
 
-	Pattern * get_duplicate(Pattern * pattern);
-	bool check_duplicate(Pattern * pattern);
+	private:
+		long int node_id;
+		glp_prob * master_lp;
+		/* Pointer to master problem object. */
+		NodeStatus lp_status;	
+		/* Status of master_lp after solving it. */
 
-        void add_init_patterns(OrderWidthContainer& ow_set);
-	void add_exist_patterns();
-	void remove_patterns();
-	void unfix_all_vars();
-	void fix_vars();
+		double opt_obj_val;	
+		/* Optimal objective function value of the lp. */
+		static double best_int_obj_val;
 
-	void store_solution(glp_prob * master_lp);
-	void print_solution(glp_prob* master_lp, OrderWidthContainer& ow_set);
-	void print_xml_report(std::ostream&, glp_prob * master_lp, OrderWidthContainer& ow_set); 
-	void print_text_report(std::ostream&, glp_prob * master_lp, OrderWidthContainer& ow_set);
+		IntContainer fix_col_ind_list;
+		DblContainer lb_list;
+		DblContainer ub_list;
+		int pat_cnt;		
+		/* Number of new patterns added while solving this node. */
 
-	void print_lp_file(int iter_count);
-	static void clean_up(BBNodeContainer& bbset);
 };
-
 
 #endif
