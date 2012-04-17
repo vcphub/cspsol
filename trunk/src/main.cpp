@@ -199,41 +199,40 @@ TestCaseSol * solve_csp()
 -------------------------------------------------------------------*/
 void run_testcases()
 {
-        ifstream ftc;  // READ from test cases specs file.
-        ofstream fres; // WRITE to test run results file.
+  ifstream ftc;  // READ from test cases specs file.
+  ofstream fres; // WRITE to test run results file.
 	assert(option->tc_file != NULL);
 
 	ftc.open(option->tc_file);
-        if(option->bpp == false)
-	        fres.open("csp-results.txt");
-        else
-	        fres.open("bpp-results.txt");
+  if(option->bpp == false)
+		fres.open("csp-results.txt");
+  else
+	  fres.open("bpp-results.txt");
 
 	time_t start_time, end_time;
 	time(&start_time);
 
 	/* Read test cases from specification file. */
-        /* Read test case file name and optimal value. */
+  /* Read test case file name and optimal value. */
 	double exp_opt_val;
 	char filename[64];
 	string buffer;
-        int tc_index = 1;
+  int tc_index = 1;
 
-        getline(ftc, buffer);
-        istringstream ss(buffer);
+  getline(ftc, buffer);
+  istringstream ss(buffer);
 	ss >> filename >> exp_opt_val;
         
-        /* Print 'cspsol' version no. and header. */
-        fres<<"cspsol, version "<< VERSION_NUMBER <<endl;
+  /* Print 'cspsol' version no. and header. */
+  fres<<"cspsol, version "<< VERSION_NUMBER <<endl;
 	fres<<"Sr.No, Testcase, Expected, Actual, Heurtics, Runtime (Secs), Status"<<endl;
 	while(!ftc.eof()) {
-
-                if(buffer[0] == '#') {
-                        getline(ftc, buffer);
-                        continue;
-                }
-                istringstream ss(buffer);
-	        ss >> filename >> exp_opt_val;
+  	if(buffer[0] == '#') {
+    	getline(ftc, buffer);
+    	continue;
+    }
+    istringstream ss(buffer);
+	  ss >> filename >> exp_opt_val;
 
 		option->data_file = filename;
 
@@ -241,7 +240,7 @@ void run_testcases()
 		cout.flush();
 
 		option->silent = true;
-                // TODO : silent_cout
+    // TODO : silent_cout
 		option->redirect_cout();
 
 		/* Solve this test case. */
@@ -264,14 +263,14 @@ void run_testcases()
 			fres<<" FAIL."<<endl;
 
 		delete(result);
-                // process next test case file.
-                getline(ftc, buffer);
-                tc_index++;
+    // process next test case file.
+    getline(ftc, buffer);
+    tc_index++;
 	}
 
 	time(&end_time);
-        ftc.close();
-        fres.close();
+  ftc.close();
+  fres.close();
 	cout<<"Finished all test cases in "<<(end_time-start_time)<<" Secs."<<endl<<endl;
 }
 

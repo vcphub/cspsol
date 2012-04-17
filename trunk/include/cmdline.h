@@ -5,7 +5,7 @@
 #include<vector>
 
 enum SearchStrategy {DFS, BFS};
-enum ReportFormat {TEXT, XML};
+enum ReportFormat {TEXT, HTML, XML};
 
 #define VERSION_NUMBER "1.02"
 

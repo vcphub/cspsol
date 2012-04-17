@@ -1,0 +1,66 @@
+<html>
+<head>
+<script class="jsbin" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+
+<title>HTML Solution Report</title>
+<script type="text/javascript">
+
+$(document).ready(function(){
+
+  $("button").click(function(){
+					
+    $.getJSON('solution.json', function(result){
+  
+			$("div").append("Optional Solution = " + result.run.Optimal + "<br>");
+			var sol = result.run.Solution;
+	
+			var myTable = '';
+			myTable += '<table id="myTable" cellspacing=0 cellpadding=2 border=1>';
+			myTable += "<tr><th>Sr. No.</th>";
+			myTable += "<th>Cut Pattern</th>";
+			myTable += "<th>Quantity</th></tr>";
+			for(var i in sol) {
+				var decvar = sol[i]; 
+				var pattern = decvar.pattern;
+				var cnt = decvar.count;
+
+				myTable += "<tr>";	
+				myTable += "<td>" + i + "</td>";	
+				myTable += "<td>";	
+				for(var j in pattern) {
+					myTable += pattern[j] + " | ";
+				}
+				myTable += "</td>";	
+
+				myTable += "<td>";	
+				myTable += cnt;
+				myTable += "</td>";	
+
+				myTable += "</tr>";	
+			}
+
+			myTable += "</table>" ;
+			$("div").append(myTable);
+
+    });
+  });
+});
+</script>
+
+<style>
+  article, aside, figure, footer, header, hgroup, 
+  menu, nav, section { display: block; }
+  body {
+    font-family: sans-serif;
+  }
+  p {
+    margin: 0px;
+  }
+</style>
+
+</head>
+<body>
+  <button>Click Me</button>
+  <div></div>
+</body>
+</html>

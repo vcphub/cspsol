@@ -84,10 +84,11 @@ void CmdOption::print_usage()
 	cout << "		If the filename is 'stdout' then solution is printed \
 to output terminal."<<endl<<endl;
 
+	cout << "--ohtml"<<endl;	
+	cout << "		Generate HTML solution report 'index.html'."<<endl;
+
 	cout << "--oxml filename"<<endl;	
 	cout << "		Write solution to specified file in XML format."<<endl;
-	cout << "		If the filename is 'stdout' then solution is printed \
-to output terminal."<<endl<<endl;
 
 	cout << "--si		Use glp_intopt to solve subproblem (knapsack)."<<endl;
 	cout << "		By default dynamic programming is used."<<endl;
@@ -203,6 +204,12 @@ void CmdOption::process_arguments(int argc, char * argv[])
                                 this->tm_lim = tm_lim;
                         else 
                                 this->tm_lim = INT_MAX;
+
+		} else if (parse_cla("--ohtml")) {
+			i++; 
+			this->rformats.push_back(HTML);
+			char * filename = (char*) "solution.json";
+			this->rfilenames.push_back(filename);
 
 		} else if (parse_cla("--oxml")) {
 			i++; 
