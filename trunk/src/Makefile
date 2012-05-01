@@ -1,5 +1,5 @@
 
-OBJS = main.o bb_node.o model.o order_width.o pattern.o knapsack.o cmdline.o reports.o
+OBJS = main.o testcase.o bb_node.o model.o order_width.o pattern.o knapsack.o cmdline.o reports.o
 CFLAGS = -Wall -g
 INC = ../include
 GLPKINC = /usr/local/include
@@ -14,6 +14,9 @@ $(OBJS): $(INC)/*.h
 
 main.o: main.cpp
 	g++ -c $(CFLAGS) -I$(GLPKINC) -I$(INC) main.cpp
+
+testcase.o: testcase.cpp 
+	g++ -c $(CFLAGS) -I$(GLPKINC) -I$(INC) testcase.cpp
 
 reports.o: reports.cpp 
 	g++ -c $(CFLAGS) -I$(GLPKINC) -I$(INC) reports.cpp

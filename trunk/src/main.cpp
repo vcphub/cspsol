@@ -25,22 +25,12 @@
 #include "model.h"
 #include "bb_node.h"
 #include "cmdline.h"
+#include "testcase.h"
 
 using namespace std;
 
-/* Result of a test case. */
-struct TestCaseSol 
-{
-	double obj_val; /* Optimal integer solution. */
-	time_t runtime; /* Time taken in secs. */
-};
-
-/* Global object to print BB progress information into a file. */
-ofstream fout("bb_log.txt");
 CmdOption * option = NULL;
 TestCaseSol * solve_csp();
-void run_testcases();
-extern int heur_obj_val;
 
 /* Program entry point */
 int main(int argc, char * argv[])
@@ -51,10 +41,8 @@ int main(int argc, char * argv[])
 
 	if(option->test == false)
 		solve_csp();
-
-	/* Run test cases from specified file. */
 	else
-		run_testcases();
+		run_testcases();  // Run test cases from specified file.
 
 	delete(option);
 	return 0;
@@ -97,27 +85,29 @@ TestCaseSol * solve_csp()
 	BBNode::set_best_int_obj_val(Infinity);
 	BBNode * root_node = new BBNode(master_lp, (long int)1);
 	bbnode_set.push_back(root_node);
-        /* Create and store initial pattern in the root node. */
+  /* Create and store initial pattern in the root node. */
 	root_node->add_init_patterns(ow_set);
 
 	/* While Loop: Branch and bound algorithm. */
 	int solved_node_cnt = 1;
-        bool tm_lim_flag = false;
+  bool tm_lim_flag = false;
+
 	while(bbnode_set.empty() == false) {
-                /* Check for time limit. */
-                time(&curr_time); 
-                if(option->tm_lim && (curr_time - start_time) >= option->tm_lim) {
-                        tm_lim_flag = true;
-                        break;
-                }
+
+  	/* Check for time limit. */
+    time(&curr_time); 
+    if(option->tm_lim && (curr_time - start_time) >= option->tm_lim) {
+    	tm_lim_flag = true;
+      break;
+    }
                                  
 		/* Select next node from the tree. */
 		BBNode * node = NULL;
 		if(option->search == BFS) {
-                        node = bbnode_set.front();
+      node = bbnode_set.front();
 			bbnode_set.pop_front();
 		} else if(option->search == DFS) {
-                        node = bbnode_set.back();
+      node = bbnode_set.back();
 			bbnode_set.pop_back();
 		}
 
@@ -148,33 +138,33 @@ TestCaseSol * solve_csp()
 			cout << "Obj Func Value = "<< node->get_opt_obj_val() <<" INTEGER ***"<<endl;
 
 		node->remove_patterns();
-                // This node in BB tree is no more needed.
-                delete(node);
+    // This node in BB tree is no more needed.
+    delete(node);
 	} 
 
 	/* Print solution report. */
-        if(tm_lim_flag == true)
-	        cout << endl << "Specified time limit exceeded." << endl;
-        else
-	        cout << endl << "Branch and bound tree exhausted." << endl;
+  if(tm_lim_flag == true)
+		cout << endl << "Specified time limit exceeded." << endl;
+  else
+	  cout << endl << "Branch and bound tree exhausted." << endl;
 
 	time(&end_time);
 	cout << endl << "# Total runtime = "<< (end_time - start_time) << " Secs"<< endl;
 
-        if(BestNode != NULL) {
-	        BestNode->print_text_report(cout, master_lp, ow_set);
-	        BestNode->print_solution(master_lp, ow_set);
-        } else {
-                cout << "No integer solution found." << endl;
-        }
+  if(BestNode != NULL) {
+		BestNode->print_text_report(cout, master_lp, ow_set);
+	  BestNode->print_solution(master_lp, ow_set);
+  } else {
+		cout << "No integer solution found." << endl;
+  }
 
 	/* Store result and other info. into a object. */
-        TestCaseSol * result = NULL;
+  TestCaseSol * result = NULL;
 	if(option->test == true) {
-	        result = new TestCaseSol();
-	        result->obj_val = BBNode::get_best_int_obj_val();
-	        result->runtime = end_time-start_time;
-        }
+		result = new TestCaseSol();
+	  result->obj_val = BBNode::get_best_int_obj_val();
+	  result->runtime = end_time-start_time;
+	}
 
 	/* Memory cleanup and exit. */
 	glp_delete_prob(master_lp);
@@ -185,92 +175,4 @@ TestCaseSol * solve_csp()
 	return result;
 }
 
-/*-------------------------------------------------------------------
- * Relevant options: cspsol --test filename.
- * The first line of the file should contain number of test cases.
- * Rest of the lines should follow FORMAT:
- * N
- * order-data-file-name1 expected_opt_value1
- * order-data-file-name2 expected_opt_value2
- * order-data-file-nameN expected_opt_valueN
- *
- * Run all testcases specified in the input file. Print test case
- * status PASS or FAIL.
--------------------------------------------------------------------*/
-void run_testcases()
-{
-  ifstream ftc;  // READ from test cases specs file.
-  ofstream fres; // WRITE to test run results file.
-	assert(option->tc_file != NULL);
-
-	ftc.open(option->tc_file);
-  if(option->bpp == false)
-		fres.open("csp-results.txt");
-  else
-	  fres.open("bpp-results.txt");
-
-	time_t start_time, end_time;
-	time(&start_time);
-
-	/* Read test cases from specification file. */
-  /* Read test case file name and optimal value. */
-	double exp_opt_val;
-	char filename[64];
-	string buffer;
-  int tc_index = 1;
-
-  getline(ftc, buffer);
-  istringstream ss(buffer);
-	ss >> filename >> exp_opt_val;
-        
-  /* Print 'cspsol' version no. and header. */
-  fres<<"cspsol, version "<< VERSION_NUMBER <<endl;
-	fres<<"Sr.No, Testcase, Expected, Actual, Heurtics, Runtime (Secs), Status"<<endl;
-	while(!ftc.eof()) {
-  	if(buffer[0] == '#') {
-    	getline(ftc, buffer);
-    	continue;
-    }
-    istringstream ss(buffer);
-	  ss >> filename >> exp_opt_val;
-
-		option->data_file = filename;
-
-		cout<<"Solving testcase no. "<< tc_index <<", '"<< option->data_file << "' ...";
-		cout.flush();
-
-		option->silent = true;
-    // TODO : silent_cout
-		option->redirect_cout();
-
-		/* Solve this test case. */
-		TestCaseSol * result = solve_csp();
-
-		option->restore_cout();
-		cout<<" Done. "<<endl;
-
-		fres<< setw(3) << tc_index << ", ";
-		fres<< setw(3) << option->data_file << ", ";
-		fres<< setw(4) << exp_opt_val << ", ";
-		fres<< setw(4) << result->obj_val << ", ";
-		fres<< setw(4) << heur_obj_val << ", ";
-		fres<< setw(4) << result->runtime << ", ";
-
-		/* Compare obj. func. value with expected value. */
-		if(fabs(result->obj_val - exp_opt_val) < 1e-7)
-			fres<<" PASS."<<endl;
-		else				
-			fres<<" FAIL."<<endl;
-
-		delete(result);
-    // process next test case file.
-    getline(ftc, buffer);
-    tc_index++;
-	}
-
-	time(&end_time);
-  ftc.close();
-  fres.close();
-	cout<<"Finished all test cases in "<<(end_time-start_time)<<" Secs."<<endl<<endl;
-}
 
