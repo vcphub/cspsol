@@ -306,37 +306,37 @@ void Pattern::print_pattern()
  * */
 void Pattern::assign_order_width(OrderWidth * ow, int& demand)
 {
-        int count = this->unused_width/ow->get_width();
-        if(count > demand) 
-                count = demand;
+	int count = this->unused_width/ow->get_width();
+  if(count > demand) 
+  	count = demand;
 
-        if(count == 0) 
-                return;
+  if(count == 0) 
+  	return;
 
-        int nzcnt = this->nzcnt;
+  int nzcnt = this->nzcnt;
 
-        /* Copy arrays data from the pattern */
+  /* Copy arrays data from the pattern */
 	int * ind = new int[nzcnt+1+1];
 	double * val = new double[nzcnt+1+1];
-        if(this->ind && this->val) {
-                for(int i = 1; i <= nzcnt; i++) {
-                        ind[i] = this->ind[i];
-                        val[i] = this->val[i];
-                }
-        }
+  if(this->ind && this->val) {
+  	for(int i = 1; i <= nzcnt; i++) {
+    	ind[i] = this->ind[i];
+      val[i] = this->val[i];
+    }
+  }
 
 	ind[nzcnt+1] = ow->get_master_row_num();
 	val[nzcnt+1] = count;
 
-        delete [] (this->ind); this->ind = NULL;
-        delete [] (this->val); this->val = NULL;
+  delete [] (this->ind); this->ind = NULL;
+  delete [] (this->val); this->val = NULL;
 
-        this->ind = ind;
-        this->val = val;
-        this->nzcnt++;
-        this->unused_width = this->unused_width - count * ow->get_width();
+  this->ind = ind;
+  this->val = val;
+  this->nzcnt++;
+  this->unused_width = this->unused_width - count * ow->get_width();
 
-        demand = demand - count; 
+  demand = demand - count; 
 }
 
 /*------------------------------------------------------------------------

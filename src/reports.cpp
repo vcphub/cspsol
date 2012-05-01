@@ -176,7 +176,6 @@ void BBNode::print_json_report(ostream& fout, glp_prob * master_lp,
 	}
 
   fout << "\t\t]"<< endl;
-
   fout << "\t}"<< endl;
   fout << "}"<< endl;
 }

@@ -57,9 +57,9 @@ OrderWidth::~OrderWidth(void)
 # Description: Read item data from file and populate container object. 
 Although input data is for Bin Packing Problem (BPP). It is converted
 into CSP using following equivalence:
-items = orders
-item weight = order width
-bin capacity = max pattern width
+ items         = orders
+ item weight   = order width
+ bin capacity  = max pattern width
 
 # Input File Format:
 First line = Number of items.
@@ -98,7 +98,8 @@ void OrderWidth::read_item_data(OrderWidthContainer& ow_set, std::string filenam
 		}	
 	}
 
-	cout<<"Total items read from file = "<<(ow_set.size())<<endl;
+	cout << "Total items read from file = "<< ow_set.size() <<endl;
+	cout << "Maximum pattern width = " << max_pattern_width <<endl;
 	fin.close();
 }
 
