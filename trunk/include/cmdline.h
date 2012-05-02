@@ -15,7 +15,18 @@ enum ReportFormat {TEXT, HTML, XML};
 class CmdOption
 {
 	public:
-                /* BB tree search. */
+		/* Methods */
+		/* Set default values in constructor. */
+		CmdOption();
+    void process_arguments(int argc, char * argv[]);
+    void print_usage();
+    void print_version();
+		void silent_cout();
+		void redirect_cout();
+		void restore_cout();
+
+		/* Data */
+    /* BB tree search. */
 		SearchStrategy search; 
 
 		/* Input data file name */
@@ -24,8 +35,8 @@ class CmdOption
 		/* Log (copy of terminal output) file name */
 		char * log_file; 
 
-                /* User specified run time limit in SECONDS */
-                int tm_lim;
+    /* User specified run time limit in SECONDS */
+    int tm_lim;
 
 		/* Subproblem glp_intopt. */
 		bool subintopt; 
@@ -38,12 +49,13 @@ class CmdOption
 
 		/* Column generation at root node only. */
 		bool cg_root_only;
-                /* Solve bin packing problem (bpp) */
+    /* Solve bin packing problem (bpp) */
 		bool bpp;
 
 		/* No progress output to standard terminal. */
 		bool silent; 
-		std::ofstream tout; /* Terminal output redirection. */
+		/* Terminal output redirection. */
+		std::ofstream tout; 
 		std::streambuf * cout_buf;
 
 		/* Solution report formats. */
@@ -53,16 +65,6 @@ class CmdOption
 		/* Run testcases. */
 		bool test; 
 		char * tc_file; 
-
-		/* Set default values in constructor. */
-		CmdOption();
-                void process_arguments(int argc, char * argv[]);
-                void print_usage();
-                void print_version();
-		void silent_cout();
-		void redirect_cout();
-		void restore_cout();
-
 };
 
 #endif

@@ -77,7 +77,6 @@ void run_testcases()
 		TestCaseSol * result = solve_csp();
 
 		option->restore_cout();
-		cout<<" Done. "<<endl;
 
 		fres<< setw(3) << tc_index << ", ";
 		fres<< setw(3) << option->data_file << ", ";
@@ -87,10 +86,15 @@ void run_testcases()
 		fres<< setw(4) << result->runtime << ", ";
 
 		/* Compare obj. func. value with expected value. */
-		if(fabs(result->obj_val - exp_opt_val) < 1e-7)
-			fres<<" PASS."<<endl;
-		else				
-			fres<<" FAIL."<<endl;
+		if(fabs(result->obj_val - exp_opt_val) < 1e-7) {
+			cout << " PASS";
+			fres << " PASS." << endl;
+		} else {
+			cout << " FAIL.";
+			fres << " FAIL." << endl;
+		}
+
+		cout << " Done. " << endl;
 
 		delete(result);
     // process next test case file.
