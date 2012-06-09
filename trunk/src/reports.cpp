@@ -22,6 +22,25 @@ using namespace std;
 void BBNode::print_solution(glp_prob * master_lp, OrderWidthContainer& ow_set)
 {
 
+	PatternIterator pat_iter = pattern_list.begin();	
+	for(; pat_iter != pattern_list.end(); pat_iter++) {
+		double x = (*pat_iter)->get_int_sol();
+		if(fabs(x) <= EPSILON)
+			continue;
+
+		// Store order width solution, to be used later.
+		for(int i = 1; i <= (*pat_iter)->nzcnt; i++) {
+			int ow_row_index = (*pat_iter)->ind[i];
+			int ow_count = (*pat_iter)->val[i];
+
+			OrderWidth * ow;
+		  ow = OrderWidth::find_orderwidth(ow_set, ow_row_index);
+			// Append
+			int sol = ow->get_solution() + ow_count * ceil(x);
+			ow->set_solution(sol);
+		}
+	}
+
 	for(int i = 0; i < (int)option->rformats.size(); i++)
 	{
 		char * filename = option->rfilenames[i];
@@ -158,7 +177,7 @@ void BBNode::print_json_report(ostream& fout, glp_prob * master_lp,
 		fout << "\t\t\t{\"pattern\":[";
 		for(int i = 1; i <= (*pat_iter)->nzcnt; i++) {
 			int ow_row_index = (*pat_iter)->ind[i];
-			double ow_count = (*pat_iter)->val[i];
+			double ow_count = (*pat_iter)->val[i]; // TODO: ceil ?
 
 			OrderWidth * ow;
 		  ow = OrderWidth::find_orderwidth(ow_set, ow_row_index);
@@ -175,7 +194,24 @@ void BBNode::print_json_report(ostream& fout, glp_prob * master_lp,
 		fout << "], \"count\":" << x << "}";
 	}
 
-  fout << "\t\t]"<< endl;
-  fout << "\t}"<< endl;
+  fout << endl << "\t\t],"<< endl; // SolutionPattern
+
+  fout << "\t\t\"SolutionWidth\":["<<endl;
+	OrderWidthIterator ow_iter = ow_set.begin();	
+	for(; ow_iter != ow_set.end(); ow_iter++) {
+		double width = (*ow_iter)->get_width();
+		double demand = (*ow_iter)->get_demand();
+		double solution = (*ow_iter)->get_solution();
+
+		if(ow_iter != ow_set.begin())
+			fout << "," << endl;
+		fout << "\t\t\t{\"width\":" << width << ", ";
+		fout << "\"demand\":" << demand << ", ";
+		fout << "\"solution\":" << solution << "}";
+	}
+
+  fout << "\t\t]"<< endl; // SolutionWidth
+
+  fout << "\t}"<< endl;   // Run
   fout << "}"<< endl;
 }

@@ -42,6 +42,8 @@ class OrderWidth
 
 		int get_id() { return id; }
 		int get_demand() { return demand; }
+		int get_solution() { return solution; }
+		void set_solution(int solution) { this->solution = solution; }
 		double get_width() { return width; }
 
 		/* Given master row index find OrderWidth object. */
@@ -55,6 +57,8 @@ class OrderWidth
 		/* Width in units of length. */
 		int demand;		
 		/* Quantity ordered. */	
+		int solution;		
+		/* Quantity provided in final solution. Must be >= demand. */	
 		int id;                 
 		/* Unique identifier for each object.*/
 		static int count;	

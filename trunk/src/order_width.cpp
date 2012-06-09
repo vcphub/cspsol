@@ -37,6 +37,7 @@ OrderWidth::OrderWidth(double width, int demand)
 
 	this->width = width;
 	this->demand = demand;	
+	this->solution = 0;	 // solution not found yet.
 	this->id = OrderWidth::count + 1;
 	OrderWidth::count++;
 

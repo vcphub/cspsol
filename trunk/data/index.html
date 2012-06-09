@@ -7,40 +7,70 @@
 
 $(document).ready(function(){
 
-  $("button").click(function(){
+  $("#solution").click(function(){
 					
     $.getJSON('solution.json', function(result){
   
+			$("div").empty();
 			$("div").append("Optional Solution = " + result.run.Optimal + "<br>");
 			var sol = result.run.Solution;
 	
-			var myTable = '';
-			myTable += '<table id="myTable" cellspacing=0 cellpadding=2 border=1>';
-			myTable += "<tr><th>Sr. No.</th>";
-			myTable += "<th>Cut Pattern</th>";
-			myTable += "<th>Quantity</th></tr>";
+			var solPattTable = '';
+			solPattTable += '<table id="solPattTable" cellspacing=0 cellpadding=2 border=1>';
+			solPattTable += "<tr><th>Sr. No.</th>";
+			solPattTable += "<th>Cut Pattern</th>";
+			solPattTable += "<th>Quantity</th></tr>";
+
 			for(var i in sol) {
 				var decvar = sol[i]; 
 				var pattern = decvar.pattern;
 				var cnt = decvar.count;
 
-				myTable += "<tr>";	
-				myTable += "<td>" + i + "</td>";	
-				myTable += "<td>";	
+				solPattTable += "<tr>";	
+				solPattTable += "<td>" + i + "</td>";	
+				solPattTable += "<td>";	
 				for(var j in pattern) {
-					myTable += pattern[j] + " | ";
+					solPattTable += pattern[j] + " | ";
 				}
-				myTable += "</td>";	
+				solPattTable += "</td>";	
 
-				myTable += "<td>";	
-				myTable += cnt;
-				myTable += "</td>";	
+				solPattTable += "<td>";	
+				solPattTable += cnt;
+				solPattTable += "</td>";	
 
-				myTable += "</tr>";	
+				solPattTable += "</tr>";	
 			}
 
-			myTable += "</table>" ;
-			$("div").append(myTable);
+			solPattTable += "</table>" ;
+			$("div").append(solPattTable);
+
+			var solWidth = result.run.SolutionWidth;
+			var solOWTable = '';
+			solOWTable += '<table id="solOWTable" cellspacing=0 cellpadding=2 border=1>';
+			solOWTable += "<tr><th>Width</th>";
+			solOWTable += "<th>Demand</th>";
+			solOWTable += "<th>Solution</th></tr>";
+
+			for(var i in solWidth) {
+				var decvar = solWidth[i]; 
+				var width = decvar.width;
+				var demand = decvar.demand;
+				var solution = decvar.solution;
+
+				solOWTable += "<td>";	
+				solOWTable += width;
+				solOWTable += "</td>";	
+				solOWTable += "<td>";	
+				solOWTable += demand;
+				solOWTable += "</td>";	
+				solOWTable += "<td>";	
+				solOWTable += solution;
+				solOWTable += "</td>";	
+				solOWTable += "</tr>";	
+			}
+
+			solOWTable += "</table>" ;
+			$("div").append(solOWTable);
 
     });
   });
@@ -59,8 +89,11 @@ $(document).ready(function(){
 </style>
 
 </head>
+
 <body>
-  <button>Click Me</button>
+  <button id="solution">Solution</button>
   <div></div>
 </body>
+
 </html>
+
