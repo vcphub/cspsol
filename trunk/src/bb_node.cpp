@@ -148,7 +148,7 @@ void BBNode::solve(OrderWidthContainer& ow_set)
 	int curr_pat_cnt = pattern_list.size();
 
 	if(option->test == false)
-	        fout<<endl<< "["<<(this->node_id)<<"]"<<" Solving BB Node"<<endl<<endl;
+		fout<<endl<< "["<<(this->node_id)<<"]"<<" Solving BB Node"<<endl<<endl;
 
 	/* Add columns to master problem for all patterns. */
 	this->add_exist_patterns();
@@ -165,13 +165,13 @@ void BBNode::solve(OrderWidthContainer& ow_set)
 		/* Solve master problem associated with this BB node. */
 		int lp_status;
 		lpx_std_basis(master_lp);
-	   	lp_status = glp_simplex(master_lp, NULL);
+	  lp_status = glp_simplex(master_lp, NULL);
 		assert(lp_status == 0);
 
 		if(glp_get_status(master_lp) != GLP_OPT) break;
 
-	        if(option->test == false)
-		        fout << "Obj Func Value = " << glp_get_obj_val(master_lp) << endl;
+	  if(option->test == false)
+			fout << "Obj Func Value = " << glp_get_obj_val(master_lp) << endl;
 		if((this->node_id != 1) && (option->cg_root_only)) break;
 
 		/* Store dual values in OrderWidth objects. */
@@ -179,7 +179,7 @@ void BBNode::solve(OrderWidthContainer& ow_set)
 
 		/* Generate best pattern by solving subproblem. */
 		Pattern * pattern;
-	   	pattern = Pattern::get_new_pattern(this, ow_set, iter_count);
+	  pattern = Pattern::get_new_pattern(this, ow_set, iter_count);
 
 		/* Could be NULL, because of new pattern could not be generated. */
 		if(pattern == NULL) break;
@@ -203,10 +203,10 @@ void BBNode::solve(OrderWidthContainer& ow_set)
 
 		/* Imp: Store integer solution */
 		if(this->opt_obj_val < BBNode::get_best_int_obj_val()) {
-                        // Copy object to BestNode.
-                        if(BestNode != NULL)
-                                delete(BestNode);
-	                BestNode = new BBNode(this->node_id, this);
+    	// Copy object to BestNode.
+      if(BestNode != NULL)
+      	delete(BestNode);
+	    BestNode = new BBNode(this->node_id, this);
 
 			BBNode::set_best_int_obj_val(this->opt_obj_val);
 			store_solution(master_lp);
