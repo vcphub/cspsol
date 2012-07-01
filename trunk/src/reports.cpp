@@ -64,7 +64,9 @@ void BBNode::print_solution(glp_prob * master_lp, OrderWidthContainer& ow_set)
 				print_json_report(cout, master_lp, ow_set);
 			else {
 				ofstream fout(filename);
-				cout<<"Generating HTML solution report "<<filename<<endl;
+				cout<<"HTML report: Data file '"<<filename<<"' created."<<endl; 
+				cout<<"+ Keep it in same folder as 'data/index.html'."<<endl; 
+				cout<<"+ Open 'index.html' in browser to view HTML report."<<endl<<endl;
 				print_json_report(fout, master_lp, ow_set);
 			}
 		} else if(option->rformats[i] == XML) {
@@ -109,6 +111,7 @@ void BBNode::print_text_report(ostream& fout, glp_prob * master_lp,
 		}
 		fout << endl;		
 	}
+	fout << endl;
 }
 
 /*-------------------------------------------------------------------
