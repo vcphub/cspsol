@@ -115,23 +115,18 @@ TestCaseSol * solve_csp()
 		/* Solve node LP using column generation. */
 		node->solve(ow_set);
 		solved_node_cnt++;
-
-		//cout<<": new patterns = "<<setw(4)<<node->get_pat_cnt()<<" ";
 		
 		cout << " | Obj. value = " << setw(8) << node->get_opt_obj_val() << " | ";
 
 		if(node->get_lp_status() == REAL_INFEA)
 			cout << "Infeasible LP. Fathom node. "<<endl;
-
 		else if(node->get_lp_status() == OPT_NONINT) {
 
 			if(node->get_opt_obj_val() >= BBNode::get_best_int_obj_val()-1.0+EPSILON) {
-				//cout << "LP worse than integer incumbent "<< node->get_opt_obj_val();
-				//cout <<" >= " << BBNode::get_best_int_obj_val()-1.0;
+				// LP worse than integer incumbent 
 				cout << "Fathom node (w.r.t. " << BBNode::get_best_int_obj_val()-1.0 << ")" << endl;
 
 			} else {
-				//cout << "Obj Func Value = "<< node->get_opt_obj_val() << " Branch."<<endl;
 				cout << "Branch." << endl;
 				/* Branch on fractional pattern variable. Create child nodes. */
 				node->branch(bbnode_set);
