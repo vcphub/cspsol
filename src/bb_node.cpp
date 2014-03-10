@@ -164,7 +164,8 @@ void BBNode::solve(OrderWidthContainer& ow_set)
 
 		/* Solve master problem associated with this BB node. */
 		int lp_status;
-		lpx_std_basis(master_lp);
+		//lpx_std_basis(master_lp); TODO: remove
+		glp_std_basis(master_lp);
 	  lp_status = glp_simplex(master_lp, NULL);
 		assert(lp_status == 0);
 
@@ -218,7 +219,9 @@ void BBNode::solve(OrderWidthContainer& ow_set)
 	}
 
 	if(this->node_id == 1) {
-		lpx_write_cpxlp(master_lp, "master-root.lp");
+    //TODO: remove
+		//lpx_write_cpxlp(master_lp, "master-root.lp");
+		glp_write_lp(master_lp, NULL, "master-root.lp");
 	}
 
 	cout<<endl;
@@ -460,7 +463,9 @@ void BBNode::store_solution(glp_prob * master_lp)
 		double int_sol = glp_get_col_prim(master_lp, col_index);
 		(*pat_iter)->set_int_sol(int_sol);
 	}
-	lpx_write_cpxlp(master_lp, "best.lp");
+	// TODO: remove
+	//lpx_write_cpxlp(master_lp, "best.lp");
+  glp_write_lp(master_lp, NULL, "best.lp");
 }
 
 
