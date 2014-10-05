@@ -49,6 +49,22 @@ BBNode::BBNode(long int node_id, BBNode * parent_node)
 }
 
 /*------------------------------------------------------------------------
+ * Get next node using some search strategy
+------------------------------------------------------------------------*/
+BBNode * BBNode::get_next_node(BBNodeContainer & bbnode_set)
+{
+	BBNode * node = NULL;
+	if(option->search == BFS) {
+  	node = bbnode_set.front();
+		bbnode_set.pop_front();
+	} else if(option->search == DFS) {
+  	node = bbnode_set.back();
+		bbnode_set.pop_back();
+	}
+	return node;
+}
+
+/*------------------------------------------------------------------------
  * Create initial patterns from given order widths.
  * Use First Fit Decreasing (FFD) logic.
  * Add these patterns to the master problem.
@@ -147,7 +163,7 @@ void BBNode::solve(OrderWidthContainer& ow_set)
 {
 	int curr_pat_cnt = pattern_list.size();
 
-	if(option->test == false)
+	if(!option->test && !option->silent)
 		fout<<endl<< "["<<(this->node_id)<<"]"<<" Solving BB Node"<<endl<<endl;
 
 	/* Add columns to master problem for all patterns. */
@@ -164,14 +180,13 @@ void BBNode::solve(OrderWidthContainer& ow_set)
 
 		/* Solve master problem associated with this BB node. */
 		int lp_status;
-		//lpx_std_basis(master_lp); TODO: remove
 		glp_std_basis(master_lp);
 	  lp_status = glp_simplex(master_lp, NULL);
 		assert(lp_status == 0);
 
 		if(glp_get_status(master_lp) != GLP_OPT) break;
 
-	  if(option->test == false)
+		if(!option->test && !option->silent)
 			fout << "Obj Func Value = " << glp_get_obj_val(master_lp) << endl;
 		if((this->node_id != 1) && (option->cg_root_only)) break;
 
@@ -192,7 +207,9 @@ void BBNode::solve(OrderWidthContainer& ow_set)
 		add_pattern(master_lp, pattern); 
 		new_pat_cnt++;
 		iter_count++;
-		cout<<"."; cout.flush();
+
+		if(!option->silent)
+			cout<<"."; cout.flush();
 	} 
 
 	if(glp_get_status(master_lp) != GLP_OPT)
@@ -219,14 +236,15 @@ void BBNode::solve(OrderWidthContainer& ow_set)
 	}
 
 	if(this->node_id == 1) {
-    //TODO: remove
-		//lpx_write_cpxlp(master_lp, "master-root.lp");
 		glp_write_lp(master_lp, NULL, "master-root.lp");
 	}
 
-	cout<<endl;
-	cout<<"Patterns: Current = "<<setw(3)<<curr_pat_cnt;
-	cout<<", New = "<<setw(3)<<new_pat_cnt<<", ";
+	if(!option->silent) {
+		cout<<endl;
+		cout<<"Patterns: Current = "<<setw(3)<<curr_pat_cnt;
+		cout<<", New = "<<setw(3)<<new_pat_cnt<<", ";
+		cout << " | Obj Val = " << setw(8) << this->get_opt_obj_val() << " | ";
+	}
 }
 
 /*------------------------------------------------------------------------
@@ -295,8 +313,8 @@ void BBNode::branch(BBNodeContainer& bbnode_set)
 	left_child->add_var_fix(col_ind, 0.0, floor_x);
 	bbnode_set.push_back(left_child);
 
-	if(option->test == false)
-	        fout<<"Branching on pattern variable, col index = "<<col_ind<<endl;
+	if(!option->test && !option->silent)
+		fout<<"Branching on pattern variable, col index = "<<col_ind<<endl;
 }
 
 /*------------------------------------------------------------------------

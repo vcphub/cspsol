@@ -31,6 +31,7 @@ using namespace std;
 
 CmdOption * option = NULL;
 TestCaseSol * solve_csp();
+bool check_time_limit(time_t start_time);
 
 /* Program entry point */
 int main(int argc, char * argv[])
@@ -61,14 +62,10 @@ TestCaseSol * solve_csp()
 	/* Container object represents branch and bound tree. */
 	BBNodeContainer bbnode_set;	
 
-	time_t start_time, end_time, curr_time;
+	time_t start_time, end_time;
 	time(&start_time);
 
-	if(option->bpp == true)
-		OrderWidth::read_item_data(ow_set, option->data_file);
-	else
-		OrderWidth::read_order_data(ow_set, option->data_file);
-
+	OrderWidth::read_input(ow_set, option->data_file);
 	OrderWidth::print_order_list(ow_set);
 
 	/* Create master lp using GLPK API. */
@@ -92,49 +89,41 @@ TestCaseSol * solve_csp()
 	int solved_node_cnt = 1;
   bool tm_lim_flag = false;
 
-	while(bbnode_set.empty() == false) {
+	while(!bbnode_set.empty() && !tm_lim_flag) {
 
-  	/* Check for time limit. */
-    time(&curr_time); 
-    if(option->tm_lim && (curr_time - start_time) >= option->tm_lim) {
-    	tm_lim_flag = true;
-      break;
-    }
+	  tm_lim_flag = check_time_limit(start_time);
                                  
 		/* Select next node from the tree. */
-		BBNode * node = NULL;
-		if(option->search == BFS) {
-      node = bbnode_set.front();
-			bbnode_set.pop_front();
-		} else if(option->search == DFS) {
-      node = bbnode_set.back();
-			bbnode_set.pop_back();
-		}
+		BBNode * node = BBNode::get_next_node(bbnode_set);
 
-		cout<<"Node "<<setw(4)<<(solved_node_cnt)<<": ";
+		if(!option->silent)
+			cout << "Node " << setw(4) << solved_node_cnt <<": ";
+
 		/* Solve node LP using column generation. */
 		node->solve(ow_set);
 		solved_node_cnt++;
 		
-		cout << " | Obj. value = " << setw(8) << node->get_opt_obj_val() << " | ";
-
-		if(node->get_lp_status() == REAL_INFEA)
-			cout << "Infeasible LP. Fathom node. "<<endl;
+		if(node->get_lp_status() == REAL_INFEA) {
+			if(!option->silent)
+				cout << "Infeasible LP. Fathom node. "<<endl;
+		}
 		else if(node->get_lp_status() == OPT_NONINT) {
 
 			if(node->get_opt_obj_val() >= BBNode::get_best_int_obj_val()-1.0+EPSILON) {
 				// LP worse than integer incumbent 
-				cout << "Fathom node (w.r.t. " << BBNode::get_best_int_obj_val()-1.0 << ")" << endl;
+				if(!option->silent)
+					cout << "Fathom node (w.r.t. " << BBNode::get_best_int_obj_val()-1.0 << ")" << endl;
 
 			} else {
-				cout << "Branch." << endl;
+				if(!option->silent)
+					cout << "Branch." << endl;
 				/* Branch on fractional pattern variable. Create child nodes. */
 				node->branch(bbnode_set);
 			}
 
 		} else if(node->get_lp_status() == OPT_INT) {
-			//cout << "Obj Func Value = "<< node->get_opt_obj_val() <<" INTEGER ***"<<endl;
-			cout << "INTEGER ***" << endl;
+			if(!option->silent)
+				cout << "INTEGER ***" << endl;
 		}
 
 		node->remove_patterns();
@@ -175,4 +164,16 @@ TestCaseSol * solve_csp()
 	return result;
 }
 
+/*-------------------------------------------------------------------
+-------------------------------------------------------------------*/
+bool check_time_limit(time_t start_time)
+{
+  bool tm_lim_flag = false;
+	time_t curr_time;
+  time(&curr_time); 
+  if(option->tm_lim && (curr_time - start_time) >= option->tm_lim) {
+  	tm_lim_flag = true;
+  }
+	return tm_lim_flag;
+}
 
