@@ -21,6 +21,7 @@ class OrderWidth
 		~OrderWidth(void);
 
 		/* OrderWidth object container related member functions. */
+		static void read_input(OrderWidthContainer& ow_set, std::string filename);
 		static void read_item_data(OrderWidthContainer& ow_set, std::string filename);
 		static void read_order_data(OrderWidthContainer& ow_set, std::string filename);
 		static void print_order_list(OrderWidthContainer& ow_set);

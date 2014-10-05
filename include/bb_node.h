@@ -48,6 +48,7 @@ class BBNode
 		int find_var_fix(int col_ind);
 		void solve(OrderWidthContainer& ow_set);
 		bool int_sol();
+		static BBNode * get_next_node(BBNodeContainer & bbnode_set);
 		void branch(BBNodeContainer& bbnode_set);
 
 		Pattern * get_duplicate(Pattern * pattern);

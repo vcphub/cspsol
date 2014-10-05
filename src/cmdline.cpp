@@ -253,11 +253,6 @@ void CmdOption::process_arguments(int argc, char * argv[])
 		cerr << "cspsol error: Orders data file NOT specified." << endl;
 		print_usage();
 	}
-
-	if(this->silent == true) {
-    /* Silent mode : No terminal output. */
-		this->silent_cout();
-	}
 }
 
 /* Silent mode : No terminal output. */

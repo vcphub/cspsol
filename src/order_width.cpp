@@ -67,6 +67,14 @@ First line = Number of items.
 Second line = bin capacity. 
 Remaining lines = Weights of all items.
 ------------------------------------------------------------------------*/
+void OrderWidth::read_input(OrderWidthContainer& ow_set, std::string filename)
+{
+	if(option->bpp == true)
+		OrderWidth::read_item_data(ow_set, option->data_file);
+	else
+		OrderWidth::read_order_data(ow_set, option->data_file);
+}
+
 void OrderWidth::read_item_data(OrderWidthContainer& ow_set, std::string filename)
 {
 	ifstream fin;
@@ -86,7 +94,6 @@ void OrderWidth::read_item_data(OrderWidthContainer& ow_set, std::string filenam
 	} else {
 		fin.open(filename.c_str());
 		assert(fin.is_open());
-		cout << "Reading item data from file " << filename << endl;
 
 		fin >> count;
 		fin >> max_pattern_width;
@@ -98,9 +105,11 @@ void OrderWidth::read_item_data(OrderWidthContainer& ow_set, std::string filenam
 			ow_set.push_back(order);
 		}	
 	}
-
-	cout << "Total items read from file = "<< ow_set.size() <<endl;
-	cout << "Maximum pattern width = " << max_pattern_width <<endl;
+	if(!option->silent) {
+		cout << "Reading item data from file " << filename << endl;
+		cout << "Total items read from file = "<< ow_set.size() <<endl;
+		cout << "Maximum pattern width = " << max_pattern_width <<endl;
+	}
 	fin.close();
 }
 
@@ -153,9 +162,11 @@ void OrderWidth::read_order_data(OrderWidthContainer& ow_set, std::string filena
 ------------------------------------------------------------------------*/
 void OrderWidth::print_order_list(OrderWidthContainer& ow_set)
 {
-	OrderWidthIterator ow_iter = ow_set.begin();	
-	for(; ow_iter != ow_set.end(); ow_iter++) {
-		cout << (*ow_iter)->width <<" "<< (*ow_iter)->demand << endl;
+	if(!option->silent) {
+		OrderWidthIterator ow_iter = ow_set.begin();	
+		for(; ow_iter != ow_set.end(); ow_iter++) {
+			cout << (*ow_iter)->width <<" "<< (*ow_iter)->demand << endl;
+		}
 	}
 }
 
