@@ -23,7 +23,8 @@ int OrderWidth::count = 0;
 /*------------------------------------------------------------------------
  * Constructor
 ------------------------------------------------------------------------*/
-OrderWidth::OrderWidth(double width, int demand)
+OrderWidth::OrderWidth(double w, int d) :
+	width(w), demand(d)
 {
 	if(demand <= 0) {
 		cout<<"incorrect input: demand = "<<demand<<endl;
@@ -35,8 +36,6 @@ OrderWidth::OrderWidth(double width, int demand)
 		exit(-1);
 	}
 
-	this->width = width;
-	this->demand = demand;	
 	this->solution = 0;	 // solution not found yet.
 	this->id = OrderWidth::count + 1;
 	OrderWidth::count++;
@@ -55,6 +54,17 @@ OrderWidth::~OrderWidth(void)
 
 /*------------------------------------------------------------------------
 # Static function.
+------------------------------------------------------------------------*/
+void OrderWidth::read_input(OrderWidthContainer& ow_set, std::string filename)
+{
+	if(option->bpp == true)
+		OrderWidth::read_item_data(ow_set, option->data_file);
+	else
+		OrderWidth::read_order_data(ow_set, option->data_file);
+}
+
+/*------------------------------------------------------------------------
+# Static function.
 # Description: Read item data from file and populate container object. 
 Although input data is for Bin Packing Problem (BPP). It is converted
 into CSP using following equivalence:
@@ -67,14 +77,6 @@ First line = Number of items.
 Second line = bin capacity. 
 Remaining lines = Weights of all items.
 ------------------------------------------------------------------------*/
-void OrderWidth::read_input(OrderWidthContainer& ow_set, std::string filename)
-{
-	if(option->bpp == true)
-		OrderWidth::read_item_data(ow_set, option->data_file);
-	else
-		OrderWidth::read_order_data(ow_set, option->data_file);
-}
-
 void OrderWidth::read_item_data(OrderWidthContainer& ow_set, std::string filename)
 {
 	ifstream fin;
