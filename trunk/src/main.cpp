@@ -40,10 +40,10 @@ int main(int argc, char * argv[])
 	option = new CmdOption();
 	option->process_arguments(argc, argv);
 
-	if(option->test == false)
-		solve_csp();
-	else
+	if(option->test)
 		run_testcases();  // Run test cases from specified file.
+	else
+		solve_csp();
 
 	delete(option);
 	return 0;
@@ -69,9 +69,8 @@ TestCaseSol * solve_csp()
 	OrderWidth::print_order_list(ow_set);
 
 	/* Create master lp using GLPK API. */
-	glp_prob * master_lp = NULL;
 	glp_term_out(GLP_OFF);
-	master_lp = glp_create_prob();
+	glp_prob * master_lp = glp_create_prob();
 	glp_set_prob_name(master_lp, "MasterCutStock");
 	/* Minimize total number of rolls/pattern used. */
 	glp_set_obj_dir(master_lp, GLP_MIN);
