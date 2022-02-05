@@ -1,29 +1,25 @@
-## Welcome to GitHub Pages
-
-You can use the [editor on GitHub](https://github.com/vcphub/cspsol/edit/wiki/docs/index.md) to maintain and preview the content for your website in Markdown files.
-
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+## Applying Column Generation Technique to Your Math Model
 
 ```markdown
-Syntax highlighted code block
+start with initial variables
+solve main lp
+compute reduced costs
+solve subproblem to generate a variable
+add variable to the main model
+repeat
 
-# Header 1
-## Header 2
-### Header 3
 
-- Bulleted
-- List
+# Does it work
+
+- CPLEX
+- GLPK
+
+Folowing sequence is important:
 
 1. Numbered
 2. List
 
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+[Link](https://en.wikipedia.org/wiki/Cutting_stock_problem) and ![Image](src)
 ```
 
 For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
