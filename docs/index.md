@@ -7,7 +7,7 @@ compute reduced costs
 solve subproblem to generate a variable
 add variable to the main model
 repeat
-
+```
 
 # Does it work
 
@@ -19,8 +19,10 @@ Folowing sequence is important:
 1. Numbered
 2. List
 
-[Link](https://en.wikipedia.org/wiki/Cutting_stock_problem) and ![Image](src)
-```
+[Wiki Page](https://en.wikipedia.org/wiki/Cutting_stock_problem) and ![Image](src)
+
+# Also See
+* GLPK
 
 For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
 
